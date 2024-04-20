@@ -1,0 +1,133 @@
+{% load static %}
+{% load humanize %}
+{% load product_custom_filters %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>فروشگاه</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link
+            href="{% static 'index_app' %}/css/dependencies/nouislider.min.css"
+            rel="stylesheet"
+    />
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+    <script
+            defer
+            src="{% static 'index_app' %}/scripts/dependencies/nouislider.min.js"
+    ></script>
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container relative">
+        <!-- Mobile Options Section -->
+        <div class="mb-6 flex items-center justify-center gap-x-4 md:hidden">
+            <!-- Filter -->
+            <button
+                    aria-controls="shop-filter-drawer-navigation"
+                    class="flex w-full items-center gap-x-4 rounded-lg bg-white px-4 py-3 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-white xs:text-base"
+                    data-drawer-show="shop-filter-drawer-navigation"
+                    data-drawer-placement="bottom"
+                    data-drawer-target="shop-filter-drawer-navigation"
+                    type="button"
+            >
+                <svg class="h-6 w-6">
+                    <use xlink:href="#filter"/>
+                </svg>
+                <div>فیلتر</div>
+            </button>
+            <!-- Sort -->
+            <button
+                    aria-controls="shop-sort-drawer-navigation"
+                    class="flex w-full items-center gap-x-4 rounded-lg bg-white px-4 py-3 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-white xs:text-base"
+                    data-drawer-show="shop-sort-drawer-navigation"
+                    data-drawer-placement="bottom"
+                    data-drawer-target="shop-sort-drawer-navigation"
+                    type="button"
+            >
+                <svg class="h-6 w-6">
+                    <use xlink:href="#sort"/>
+                </svg>
+                <div>مرتب سازی</div>
+            </button>
+        </div>
+
+        {% include 'includes/filter.html' %}
+        {% include 'includes/footer.html' %}
+    </div>
+
+    <script>
+        const addSearchFunctionality = (searchInput, itemList) => {
+            searchInput.addEventListener("input", function () {
+                const searchTerm = searchInput.value.trim().toLowerCase();
+                const items = itemList.querySelectorAll("li:not(:first-child)"); // Exclude the first <li> with the search input.
+
+                items.forEach(function (item) {
+                    const brandName = item
+                        .querySelector("span:first-child")
+                        .textContent.toLowerCase();
+                    const brandCode = item
+                        .querySelector("span:last-child")
+                        .textContent.toLowerCase();
+
+                    if (
+                        brandName.includes(searchTerm) ||
+                        brandCode.includes(searchTerm)
+                    ) {
+                        item.style.display = "block";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+            });
+        };
+        const brandListSearchInputDesktop = document.getElementById(
+            "brandListFilterDesktopSearchInput",
+        );
+        const brandListDesktop = document.getElementById(
+            "brandListFilterDesktop",
+        );
+
+        const brandListSearchInputMobile = document.getElementById(
+            "brandListFilterMobileSearchInput",
+        );
+        const brandListMobile = document.getElementById("brandListFilterMobile");
+
+        const colorListSearchInputDesktop = document.getElementById(
+            "colorListFilterDesktopSearchInput",
+        );
+        const colorListDesktop = document.getElementById(
+            "colorListFilterDesktop",
+        );
+
+        const colorListSearchInputMobile = document.getElementById(
+            "colorListFilterMobileSearchInput",
+        );
+        const colorListMobile = document.getElementById("colorListFilterMobile");
+
+        addSearchFunctionality(brandListSearchInputDesktop, brandListDesktop);
+        addSearchFunctionality(brandListSearchInputMobile, brandListMobile);
+
+        addSearchFunctionality(colorListSearchInputDesktop, colorListDesktop);
+        addSearchFunctionality(colorListSearchInputMobile, colorListMobile);
+    </script>
+</body>
+</html>

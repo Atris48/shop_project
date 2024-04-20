@@ -1,0 +1,986 @@
+{% load product_custom_filters %}
+{% load humanize %}
+<div class="grid grid-cols-12 grid-rows-[60px_min(500px,_1fr)] gap-4">
+    <!-- Desktop Filter Section -->
+    <div class="col-span-4 row-span-2 hidden md:block lg:col-span-3">
+        <div
+                class="sticky top-32 mb-4 overflow-hidden rounded-lg bg-white shadow-base dark:bg-zinc-900"
+        >
+            <div
+                    dir="ltr"
+                    class="flex max-h-[calc(95vh_-_100px)] flex-col overflow-y-auto overflow-x-hidden px-4 py-3"
+            >
+                <div dir="rtl">
+                    <!-- Title -->
+                    <div class="mb-6 flex items-center justify-between">
+                        <h3 class="text-zinc-700 dark:text-white xl:text-lg">
+                            فیلتر ها
+                        </h3>
+                        <button class="btn-primary-nobg py-2 text-sm">
+                            حذف همه
+                        </button>
+                    </div>
+                    <form action="">
+                        <input type="hidden" id="min-price-input" name="min_price" value="{{ request.GET.min_price }}">
+                        <input type="hidden" id="max-price-input" name="max_price" value="{{ request.GET.max_price }}">
+
+                        <ul class="space-y-6">
+                            <!-- Price -->
+                            <li>
+                                <div>
+                                    <p class="mb-4 text-zinc-700 dark:text-white">
+                                        محدوده قیمت
+                                    </p>
+                                    <div class="space-y-4">
+                                        <div id="shop-price-slider"></div>
+                                        <div class="flex items-center justify-between">
+                                            <div
+                                                    class="text-emerald-500 dark:text-emerald-400"
+                                            >
+                                <span
+                                        class="text-xs font-bold xl:text-sm"
+                                        id="shop-price-slider-min"
+                                >
+                                </span>
+                                                <span class="text-xs">تومان</span>
+                                            </div>
+                                            <div
+                                                    class="text-emerald-500 dark:text-emerald-400"
+                                            >
+                                <span
+                                        class="text-xs font-bold xl:text-sm"
+                                        id="shop-price-slider-max"
+                                >
+                                </span>
+                                                <span class="text-xs">تومان</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Categories -->
+                            <li>
+                                <details
+                                        class="[&amp;_summary::-webkit-details-marker]:hidden group"
+                                >
+                                    <summary
+                                            class="flex cursor-pointer items-center justify-between rounded-lg py-3 text-zinc-700 dark:text-white"
+                                    >
+                                        <span> دسته بندی ها </span>
+                                        <span
+                                                class="shrink-0 transition duration-200 group-open:-rotate-90"
+                                        >
+                              <svg class="h-5 w-5">
+                                <use xlink:href="#chevron-left"/>
+                              </svg>
+                            </span>
+                                    </summary>
+                                    <div class="mt-2 max-h-60 overflow-y-auto pl-1">
+                                        <ul class="space-y-2 rounded-lg">
+                                            <li>
+                                                <a
+                                                        class="flex items-center gap-x-2 rounded-lg px-4 py-2 text-zinc-700 dark:text-white"
+                                                        href="#"
+                                                >
+                                                    <span> دسته بندی 1 </span>
+                                                    <svg class="h-5 w-5">
+                                                        <use xlink:href="#chevron-left"/>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a
+                                                        class="flex items-center gap-x-2 rounded-lg px-4 py-2 text-zinc-700 dark:text-white"
+                                                        href="#"
+                                                >
+                                                    <span> دسته بندی 2 </span>
+                                                    <svg class="h-5 w-5">
+                                                        <use xlink:href="#chevron-left"/>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a
+                                                        class="flex items-center gap-x-2 rounded-lg px-4 py-2 text-zinc-700 dark:text-white"
+                                                        href="#"
+                                                >
+                                                    <span> دسته بندی 3 </span>
+                                                    <svg class="h-5 w-5">
+                                                        <use xlink:href="#chevron-left"/>
+                                                    </svg>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </details>
+                            </li>
+                            <!-- sizes -->
+                            <li>
+                                <details
+                                        class="[&amp;_summary::-webkit-details-marker]:hidden group"
+                                >
+                                    <summary
+                                            class="flex cursor-pointer items-center justify-between rounded-lg py-3 text-zinc-700 dark:text-white"
+                                    >
+                                        <span> سایز ها </span>
+                                        <span
+                                                class="shrink-0 transition duration-200 group-open:-rotate-90"
+                                        >
+                              <svg class="h-5 w-5">
+                                <use xlink:href="#chevron-left"/>
+                              </svg>
+                            </span>
+                                    </summary>
+                                    <div class="mt-2 max-h-60 overflow-y-auto pl-1">
+                                        <ul
+                                                class="space-y-2 rounded-lg"
+                                                id="brandListFilterDesktop"
+                                        >
+                                            <li class="p-2">
+                                                <label class="sr-only">size search</label>
+                                                <input
+                                                        id="brandListFilterDesktopSearchInput"
+                                                        class="w-full rounded-lg border border-none bg-gray-100 px-2 py-3 text-zinc-600 outline-none placeholder:text-sm placeholder:text-zinc-500 focus:ring-0 dark:bg-black dark:text-zinc-300 placeholder:dark:text-zinc-400"
+                                                        placeholder="جستجوی سایز ..."
+                                                        type="text"
+                                                />
+                                            </li>
+                                            {% for size in sizes %}
+                                                <li>
+                                                    <div
+                                                            class="flex w-full items-center gap-x-2 pr-4"
+                                                    >
+                                                        <input
+                                                                {% if size in request.GET|get_list:'size' %}
+                                                                    checked
+                                                                {% endif %}
+                                                                    name="size"
+                                                                    id="brand-nike"
+                                                                    type="checkbox"
+                                                                    value="{{ size }}"
+                                                                    class="h-4 w-4 cursor-pointer rounded-xl border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-zinc-700"
+                                                        />
+                                                        <label
+                                                                for="brand-nike"
+                                                                class="flex w-full cursor-pointer items-center justify-between py-2 pl-4 font-medium text-zinc-600 dark:text-zinc-300"
+                                                        >
+                                                            <span>{{ size }}</span>
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+
+                                        </ul>
+                                    </div>
+                                </details>
+                            </li>
+                            <!-- colors -->
+                            <li>
+                                <details
+                                        class="[&amp;_summary::-webkit-details-marker]:hidden group"
+                                >
+                                    <summary
+                                            class="flex cursor-pointer items-center justify-between rounded-lg py-3 text-zinc-700 dark:text-white"
+                                    >
+                                        <span> رنگ ها </span>
+                                        <span
+                                                class="shrink-0 transition duration-200 group-open:-rotate-90"
+                                        >
+                              <svg class="h-5 w-5">
+                                <use xlink:href="#chevron-left"/>
+                              </svg>
+                            </span>
+                                    </summary>
+                                    <div class="mt-2 max-h-60 overflow-y-auto pl-1">
+                                        <ul
+                                                class="space-y-2 rounded-lg"
+                                                id="colorListFilterDesktop"
+                                        >
+                                            <li class="p-2">
+                                                <label class="sr-only">Color search</label>
+                                                <input
+                                                        id="colorListFilterDesktopSearchInput"
+                                                        class="w-full rounded-lg border border-none bg-gray-100 px-2 py-3 text-zinc-600 outline-none placeholder:text-sm placeholder:text-zinc-500 focus:ring-0 dark:bg-black dark:text-zinc-300 placeholder:dark:text-zinc-400"
+                                                        placeholder="جستجوی رنگ ..."
+                                                        type="text"
+                                                />
+                                            </li>
+                                            {% for color in colors %}
+                                                <li>
+                                                    <div
+                                                            class="flex w-full items-center gap-x-2 pr-4"
+                                                    >
+                                                        <input
+                                                                {% if color|get_en_title in request.GET|get_list:'color' %}
+                                                                    checked
+                                                                {% endif %}
+                                                                    name="color"
+                                                                    id="color-red"
+                                                                    type="checkbox"
+                                                                    value="{{ color|get_en_title }}"
+                                                                    class="h-4 w-4 cursor-pointer rounded-xl border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-zinc-700"
+                                                        />
+                                                        <label
+                                                                for="color-red"
+                                                                class="flex w-full cursor-pointer items-center justify-between py-2 pl-4 font-medium text-zinc-600 dark:text-zinc-300"
+                                                        >
+                                                            <span>{{ color }}</span>
+                                                            <span
+                                                                    class="h-4 w-4 rounded-full ring-2 ring-gray-200 dark:ring-zinc-700"
+                                                                    style="background: {{ color|get_en_title }}"
+                                                            ></span>
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+
+                                        </ul>
+                                    </div>
+                                </details>
+                            </li>
+                            {% if request.resolver_match.url_name != 'special_offers' %}
+                                <!-- Special -->
+                                <li>
+                                    <label
+                                            class="flex cursor-pointer items-center justify-between py-3"
+                                            for="onlySpecialDesktop"
+                                    >
+                                        <div class="text-zinc-700 dark:text-white">
+                                            فقط محصولات ویژه
+                                        </div>
+                                        <div
+                                                class="relative inline-flex cursor-pointer items-center"
+                                        >
+                                            <input
+                                                    {% if request.GET.special %}
+                                                        {% if request.GET.special == 'on' %}
+                                                            checked
+                                                        {% endif %}
+                                                    {% endif %}
+                                                            name="special"
+                                                            class="peer sr-only"
+                                                            id="onlySpecialDesktop"
+                                                            type="checkbox"
+                                            />
+
+                                            <div
+                                                    class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-emerald-500 peer-checked:after:translate-x-full peer-focus:ring-emerald-500 dark:bg-zinc-800 after:dark:bg-zinc-900 peer-checked:dark:bg-emerald-400 peer-focus:dark:ring-emerald-400"
+                                            ></div>
+                                        </div>
+                                    </label>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                        <br>
+                        <button onclick="set_value()" type="submit"
+                                style="background-color: #2cb12c;width: 70%;border-radius: 10px;height: 40px">
+                            فیلتر
+                        </button>
+                        {% if request.GET.sort %}
+                            <input name="sort" type="hidden" value="{{ request.GET.sort }}">
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-span-12 space-y-4 md:col-span-8 lg:col-span-9">
+        <!-- Desktop Sort Section -->
+        <div class="hidden md:block">
+            <div
+                    class="flex h-14 items-center gap-x-2 rounded-lg bg-white px-2 text-zinc-600 shadow-base dark:bg-zinc-900 dark:text-zinc-300 lg:px-4"
+            >
+                <!-- Title -->
+                <div class="flex items-center gap-x-2 text-sm lg:text-base">
+                    <svg class="h-6 w-6">
+                        <use xlink:href="#sort"/>
+                    </svg>
+                    <p>مرتب سازی بر اساس</p>
+                </div>
+                <!-- Sort Buttons -->
+                <a href="?sort=-created_at
+
+
+
+
+
+
+
+
+
+
+                        {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}"
+                   class="{% if request.GET.sort == '-created_at' %}sort-button-active{% endif %} rounded-lg px-1 py-2 text-sm hover:bg-gray-100 hover:dark:bg-black lg:px-4"
+                >
+                    جدید ترین
+                </a>
+                <a href="?sort=-created_at
+
+
+
+
+
+
+
+
+
+
+                        {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}"
+                   class="{% if request.GET.sort == '-created_at' %}sort-button-active{% endif %} rounded-lg px-1 py-2 text-sm hover:bg-gray-100 hover:dark:bg-black lg:px-4"
+                >
+                    پرفروش ترین
+                </a>
+                {% if request.resolver_match.url_name == 'special_offers' %}
+                    <a href="?sort=-discounted_price
+
+
+
+
+
+
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}"
+                       class="{% if request.GET.sort == '-discounted_price' %}sort-button-active{% endif %} rounded-lg px-1 py-2 text-sm hover:bg-gray-100 hover:dark:bg-black lg:px-4"
+                    >
+                        گران ترین
+                    </a>
+                    <a href="?sort=discounted_price
+
+
+
+
+
+
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}"
+                       class="{% if request.GET.sort == 'discounted_price' %}sort-button-active{% endif %} rounded-lg px-1 py-2 text-sm hover:bg-gray-100 hover:dark:bg-black lg:px-4"
+                    >
+                        ارزان ترین
+                    </a>
+                {% else %}
+                    <a href="?sort=-price
+
+
+
+
+
+
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}"
+                       class="{% if request.GET.sort == '-price' %}sort-button-active{% endif %} rounded-lg px-1 py-2 text-sm hover:bg-gray-100 hover:dark:bg-black lg:px-4"
+                    >
+                        گران ترین
+                    </a>
+                    <a href="?sort=price
+
+
+
+
+
+
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}"
+                       class="{% if request.GET.sort == 'price' %}sort-button-active{% endif %} rounded-lg px-1 py-2 text-sm hover:bg-gray-100 hover:dark:bg-black lg:px-4"
+                    >
+                        ارزان ترین
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div
+                class="grid grid-cols-2 gap-px gap-y-2 xs:gap-4 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+            {% if products %}
+                {% for product in products %}
+                    <div
+                            class="border-gradient group relative rounded-base p-px before:absolute before:-inset-px before:h-[calc(100%+2px)] before:w-[calc(100%+2px)] before:rounded-base"
+                    >
+                        <div
+                                class="relative rounded-xl bg-white p-2 shadow-base dark:bg-zinc-900 md:p-5"
+                        >
+                            <!-- image -->
+                            <div class="mb-2 md:mb-5" draggable="false">
+                                <a href="{% url 'product_detail' product.slug %}">
+                                    {% if product.poster %}
+                                        <img
+                                                alt=""
+                                                class="mx-auto w-32 rounded-lg md:w-auto"
+                                                src="{{ product.poster.url }}"
+                                        />
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <!-- title -->
+                            <div class="mb-1">
+                                <a
+                                        class="line-clamp-2 h-10 text-sm text-zinc-700 dark:text-white md:h-12 md:text-base"
+                                        href="{% url 'product_detail' product.slug %}"
+                                >
+                                    {{ product.title }}
+                                </a>
+                            </div>
+                            <!-- Prices -->
+                            <div class="flex flex-col">
+                                <!-- Old price -->
+                                {% if product.is_available %}
+                                    {% if product.discounted_price %}
+                                        <div class="h-5 text-left">
+                                            <del
+                                                    class="text-xs text-zinc-500 decoration-red-600 dark:text-zinc-400 dark:decoration-red-500 xs:text-sm md:text-base"
+                                            >
+                                                {{ product.price|intcomma:False }}
+                                            </del>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p
+                                                        class="w-7 rounded-full bg-red-500 py-px text-center text-xs text-white dark:bg-red-500 xs:w-9 xs:text-sm"
+                                                >
+                                                    {{ product.discounted_percentage|default:'' }}%
+                                                </p>
+                                            </div>
+                                            <!-- New price -->
+                                            <div
+                                                    class="text-xs font-bold text-emerald-500 dark:text-emerald-400 xs:text-sm md:text-base"
+                                            >
+                                                {{ product.discounted_price|intcomma:False|default:'' }}
+                                                <span class="text-xs font-light md:text-sm"
+                                                >تومان</span
+                                                >
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div
+                                                class="text-xs font-bold text-emerald-500 dark:text-emerald-400 xs:text-sm md:text-base"
+                                        >
+                                            {{ product.price|intcomma:False|default:'' }}
+                                            <span class="text-xs font-light md:text-sm"
+                                            >تومان</span
+                                            >
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <br>
+                                    <div class="flex items-center justify-between">
+                                        <div style="color: red"
+                                             class="text-xs font-bold text-emerald-500 dark:text-emerald-400 xs:text-sm md:text-base"
+                                        >
+                                            ناموجود
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <a href="{% url 'all_product' %}">محصولی
+                    یافت نشد</a>
+            {% endif %}
+        </div>
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+            <div
+                    class="flex items-center justify-center gap-x-4 md:justify-end"
+            >
+                <!-- Previous page-->
+                {% if products.has_previous %}
+                    <a
+                            class="pagination-button flex items-center justify-center"
+                            href="?page={{ products.previous_page_number }}"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#chevron-right"></use>
+                        </svg>
+                    </a>
+                {% endif %}
+
+                <!-- Pages -->
+                <div class="flex items-center gap-x-2">
+                    {% if request.GET.page %}
+                        {% if request.GET.page != '1' and request.GET.page != '2' and request.GET.page != '3' and request.GET.page != '4' %}
+                            <a
+                                    class="pagination-button pagination-button-{% if products.number == number %}active{% endif %}"
+                                    href="?page=1"
+                            >
+                                1...
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    {% for number in products.paginator.page_range %}
+                        {% if number >= products.number|add:"-3" and number <= products.number|add:"3" %}
+                            <a
+                                    class="pagination-button pagination-button-{% if products.number == number %}active{% endif %}"
+                                    href="?page={{ number }}"
+                            >
+                                {{ number }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- Next page-->
+                {% include 'includes/products_paginator.html' %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+</main>
+<!-- Mobile Filter Drawer -->
+<div
+        aria-labelledby="shop-filter-drawer-navigation-label"
+        class="fixed bottom-0 left-0 right-0 z-40 h-[100svh] w-full translate-y-full bg-white transition-transform duration-300 dark:bg-zinc-900"
+        id="shop-filter-drawer-navigation"
+        tabindex="-1"
+>
+    <div
+            class="flex items-center justify-between gap-x-4 border-b border-gray-100 p-4 pb-5 dark:border-white/5"
+    >
+        <h5 class="text-lg text-zinc-600 dark:text-zinc-300">
+            فیلتر محصولات
+        </h5>
+        <button
+                aria-controls="user-account-drawer-navigation"
+                class="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-black dark:hover:text-white"
+                data-drawer-hide="shop-filter-drawer-navigation"
+                type="button"
+        >
+            <svg class="h-5 w-5">
+                <use xlink:href="#close"/>
+            </svg>
+
+            <span class="sr-only">Close menu</span>
+        </button>
+    </div>
+    <form>
+
+        <div class="h-full pb-[150px]">
+            <ul class="h-full space-y-6 overflow-y-auto p-4">
+
+                <li>
+                    <div>
+                        <p class="mb-4 text-zinc-700 dark:text-white">محدوده قیمت</p>
+                        <div class="space-y-4">
+                            <div id="shop-price-slider"></div>
+                            <div class="flex items-center justify-between">
+                                <div class="text-emerald-500 dark:text-emerald-400">
+                      <span
+                              class="text-xs font-bold xl:text-sm"
+                              id="shop-price-slider-min"
+                      >
+                      </span>
+                                    <span class="text-xs">تومان</span>
+                                </div>
+                                <div class="text-emerald-500 dark:text-emerald-400">
+                      <span
+                              class="text-xs font-bold xl:text-sm"
+                              id="shop-price-slider-max"
+                      >
+                      </span>
+                                    <span class="text-xs">تومان</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Categories -->
+                <li>
+                    <details
+                            class="[&amp;_summary::-webkit-details-marker]:hidden group"
+                    >
+                        <summary
+                                class="flex cursor-pointer items-center justify-between rounded-lg py-3 text-zinc-700 dark:text-white"
+                        >
+                            <span> دسته بندی ها </span>
+                            <span
+                                    class="shrink-0 transition duration-200 group-open:-rotate-90"
+                            >
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#chevron-left"/>
+                    </svg>
+                  </span>
+                        </summary>
+                        <div class="mt-2 max-h-60 overflow-y-auto pl-1">
+                            <ul class="space-y-2 rounded-lg">
+                                <li>
+                                    <a
+                                            class="flex items-center gap-x-2 rounded-lg px-4 py-3 text-zinc-700 dark:text-white"
+                                            href="#"
+                                    >
+                                        <span> دسته بندی 1 </span>
+                                        <svg class="h-5 w-5">
+                                            <use xlink:href="#chevron-left"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                            class="flex items-center gap-x-2 rounded-lg px-4 py-3 text-zinc-700 dark:text-white"
+                                            href="#"
+                                    >
+                                        <span> دسته بندی 2 </span>
+                                        <svg class="h-5 w-5">
+                                            <use xlink:href="#chevron-left"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                            class="flex items-center gap-x-2 rounded-lg px-4 py-3 text-zinc-700 dark:text-white"
+                                            href="#"
+                                    >
+                                        <span> دسته بندی 3 </span>
+                                        <svg class="h-5 w-5">
+                                            <use xlink:href="#chevron-left"/>
+                                        </svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </details>
+                </li>
+                <!-- brands -->
+                <li>
+                    <details
+                            class="[&amp;_summary::-webkit-details-marker]:hidden group"
+                    >
+                        <summary
+                                class="flex cursor-pointer items-center justify-between rounded-lg py-3 text-zinc-700 dark:text-white"
+                        >
+                            <span> سایز ها </span>
+                            <span
+                                    class="shrink-0 transition duration-200 group-open:-rotate-90"
+                            >
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#chevron-left"/>
+                    </svg>
+                  </span>
+                        </summary>
+                        <div class="mt-2 max-h-60 overflow-y-auto pl-1">
+                            <ul class="space-y-2 rounded-lg" id="brandListFilterMobile">
+                                <li class="p-2">
+                                    <label class="sr-only">size search</label>
+                                    <input
+                                            id="brandListFilterMobileSearchInput"
+                                            class="w-full rounded-lg border border-none bg-gray-100 px-2 py-3 text-zinc-600 outline-none placeholder:text-sm placeholder:text-zinc-500 focus:ring-0 dark:bg-black dark:text-zinc-300 placeholder:dark:text-zinc-400"
+                                            placeholder="جستجوی سایز ..."
+                                            type="text"
+                                    />
+                                </li>
+                                {% for size in sizes %}
+                                    <li>
+                                        <div class="flex w-full items-center gap-x-2 pr-4">
+                                            <input
+                                                    {% if size in request.GET|get_list:'size' %}
+                                                        checked
+                                                    {% endif %}
+                                                        name="size"
+                                                        id="brand-nike-mobile"
+                                                        type="checkbox"
+                                                        value="{{ size }}"
+                                                        class="h-4 w-4 cursor-pointer rounded-xl border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-zinc-700"
+                                            />
+                                            <label
+                                                    for="brand-nike-mobile"
+                                                    class="flex w-full cursor-pointer items-center justify-between py-2 pl-4 font-medium text-zinc-600 dark:text-zinc-300"
+                                            >
+                                                <span>{{ size }}</span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
+                    </details>
+                </li>
+                <!-- Colors -->
+                <li>
+                    <details
+                            class="[&amp;_summary::-webkit-details-marker]:hidden group"
+                    >
+                        <summary
+                                class="flex cursor-pointer items-center justify-between rounded-lg py-3 text-zinc-700 dark:text-white"
+                        >
+                            <span> رنگ ها </span>
+                            <span
+                                    class="shrink-0 transition duration-200 group-open:-rotate-90"
+                            >
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#chevron-left"/>
+                    </svg>
+                  </span>
+                        </summary>
+                        <div class="mt-2 max-h-60 overflow-y-auto pl-1">
+                            <ul class="space-y-2 rounded-lg" id="colorListFilterMobile">
+                                <li class="p-2">
+                                    <label class="sr-only">Color search</label>
+                                    <input
+                                            id="colorListFilterMobileSearchInput"
+                                            class="w-full rounded-lg border border-none bg-gray-100 px-2 py-3 text-zinc-600 outline-none placeholder:text-sm placeholder:text-zinc-500 focus:ring-0 dark:bg-black dark:text-zinc-300 placeholder:dark:text-zinc-400"
+                                            placeholder="جستجوی رنگ ..."
+                                            type="text"
+                                    />
+                                </li>
+                                {% for color in colors %}
+                                    <li>
+                                        <div class="flex w-full items-center gap-x-2 pr-4">
+                                            <input
+                                                    {% if color|get_en_title in request.GET|get_list:'color' %}
+                                                        checked
+                                                    {% endif %}
+                                                        name="color"
+                                                        id="color-red-mobile"
+                                                        type="checkbox"
+                                                        value="{{ color|get_en_title }}"
+                                                        class="h-4 w-4 cursor-pointer rounded-xl border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-zinc-700"
+                                            />
+                                            <label
+                                                    for="color-red-mobile"
+                                                    class="flex w-full cursor-pointer items-center justify-between py-2 pl-4 font-medium text-zinc-600 dark:text-zinc-300"
+                                            >
+                                                <span>{{ color }}</span>
+                                                <span
+                                                        class="h-4 w-4 rounded-full ring-2 ring-gray-200 dark:ring-zinc-700"
+                                                        style="background: {{ color|get_en_title }}"
+                                                ></span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
+                    </details>
+                </li>
+                {% if request.resolver_match.url_name != 'special_offers' %}
+                    <li>
+                        <label
+                                class="flex cursor-pointer items-center justify-between py-3"
+                                for="onlySpecialMobile"
+                        >
+                            <div class="text-zinc-700 dark:text-white">
+                                فقط محصولات ویژه
+                            </div>
+                            <div class="relative inline-flex cursor-pointer items-center">
+                                <input
+                                        name="special"
+                                        class="peer sr-only"
+                                        id="onlySpecialMobile"
+                                        type="checkbox"
+                                />
+                                f
+                                <div
+                                        class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-emerald-500 peer-checked:after:translate-x-full peer-focus:ring-emerald-500 dark:bg-zinc-800 after:dark:bg-zinc-900 peer-checked:dark:bg-emerald-400 peer-focus:dark:ring-emerald-400"
+                                ></div>
+                            </div>
+                        </label>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Footer -->
+
+        <div
+                class="sticky bottom-0 left-0 right-0 flex items-center justify-between border-t border-gray-100 bg-white p-4 px-6 py-4 dark:border-white/5 dark:bg-zinc-900"
+        >
+            <button class="btn-primary w-full py-3 text-sm" type="submit">
+                فیلتر
+            </button>
+        </div>
+        {% if request.GET.sort %}
+            <input name="sort" type="hidden" value="{{ request.GET.sort }}">
+        {% endif %}
+    </form>
+
+</div>
+<!-- Mobile Sort Drawer -->
+<div
+        aria-labelledby="shop-sort-drawer-navigation-label"
+        class="fixed bottom-0 left-0 right-0 z-40 h-auto w-full translate-y-full rounded-t-3xl bg-white transition-transform duration-300 dark:bg-zinc-900"
+        id="shop-sort-drawer-navigation"
+        tabindex="-1"
+>
+    <div
+            class="flex items-center justify-between gap-x-4 border-b border-gray-100 p-4 pb-5 dark:border-white/5"
+    >
+        <h5 class="text-lg text-zinc-600 dark:text-zinc-300">
+            مرتب سازی بر اساس
+        </h5>
+        <button
+                aria-controls="user-account-drawer-navigation"
+                class="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-zinc-600 hover:bg-zinc-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-black dark:hover:text-white"
+                data-drawer-hide="shop-sort-drawer-navigation"
+                type="button"
+        >
+            <svg class="h-5 w-5">
+                <use xlink:href="#close"/>
+            </svg>
+
+            <span class="sr-only">Close menu</span>
+        </button>
+    </div>
+
+    <div
+            class="main-scroll h-full space-y-2 divide-y divide-gray-100 overflow-y-auto p-4 dark:divide-white/5"
+    >
+        <fieldset class="flex flex-col space-y-2">
+            <legend class="sr-only">Sort</legend>
+
+            <div>
+                <a href="?sort=-created_at
+
+
+
+
+                        {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}">
+                    <label
+                            class="relative block w-full cursor-pointer rounded-lg border border-gray-200 p-4 shadow-base peer-checked:border-emerald-500 dark:border-white/5 peer-checked:dark:border-emerald-400"
+                            for="sort-new"
+                    >
+                        <p class="text-center text-zinc-600 dark:text-zinc-300">
+                            جدید ترین
+                        </p>
+                    </label>
+                </a>
+            </div>
+            <div>
+                <a href="?sort=-created_at
+
+
+
+
+                        {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}">
+                    <label
+                            class="relative block w-full cursor-pointer rounded-lg border border-gray-200 p-4 shadow-base peer-checked:border-emerald-500 dark:border-white/5 peer-checked:dark:border-emerald-400"
+                            for="sort-new"
+                    >
+                        <p class="text-center text-zinc-600 dark:text-zinc-300">
+                            پرفروش ترین
+                        </p>
+                    </label>
+                </a>
+            </div>
+            {% if request.resolver_match.url_name == 'special_offers' %}
+                <div>
+                    <a href="?sort=-discounted_price
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}">
+                        <label
+                                class="relative block w-full cursor-pointer rounded-lg border border-gray-200 p-4 shadow-base peer-checked:border-emerald-500 dark:border-white/5 peer-checked:dark:border-emerald-400"
+                                for="sort-new"
+                        >
+                            <p class="text-center text-zinc-600 dark:text-zinc-300">
+                                گران ترین
+                            </p>
+                        </label>
+                    </a>
+                </div>
+                <div>
+                    <a href="?sort=discounted_price
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}">
+                        <label
+                                class="relative block w-full cursor-pointer rounded-lg border border-gray-200 p-4 shadow-base peer-checked:border-emerald-500 dark:border-white/5 peer-checked:dark:border-emerald-400"
+                                for="sort-new"
+                        >
+                            <p class="text-center text-zinc-600 dark:text-zinc-300">
+                                ارزان ترین
+                            </p>
+                        </label>
+                    </a>
+                </div>
+            {% else %}
+                <div>
+                    <a href="?sort=-price
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}">
+                        <label
+                                class="relative block w-full cursor-pointer rounded-lg border border-gray-200 p-4 shadow-base peer-checked:border-emerald-500 dark:border-white/5 peer-checked:dark:border-emerald-400"
+                                for="sort-new"
+                        >
+                            <p class="text-center text-zinc-600 dark:text-zinc-300">
+                                گران ترین
+                            </p>
+                        </label>
+                    </a>
+                </div>
+                <div>
+                    <a href="?sort=price
+
+
+
+
+                            {% with query_params=request.GET|get_query_params_for_sorting %}{% for key, values in query_params.items %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endfor %}{% endwith %}">
+                        <label
+                                class="relative block w-full cursor-pointer rounded-lg border border-gray-200 p-4 shadow-base peer-checked:border-emerald-500 dark:border-white/5 peer-checked:dark:border-emerald-400"
+                                for="sort-new"
+                        >
+                            <p class="text-center text-zinc-600 dark:text-zinc-300">
+                                ارزان ترین
+                            </p>
+                        </label>
+                    </a>
+                </div>
+            {% endif %}
+        </fieldset>
+    </div>
+</div>
+{% if request.GET.min_price or request.GET.max_price %}
+    <script>
+        var testSleep = function () {
+            setTimeout(function () {
+                var text_1 = document.getElementById('shop-price-slider-min')
+                var text_2 = document.getElementById('shop-price-slider-max')
+                text_1.textContent = '{{ request.GET.min_price }}'
+                text_2.textContent = '{{ request.GET.max_price }}'
+                console.log(text_1)
+            }, 100);
+        }
+
+        testSleep();
+
+    </script>
+{% endif %}
+<script>
+    function set_value() {
+        var minPriceElement = document.getElementById('shop-price-slider-min');
+        var maxPriceElement = document.getElementById('shop-price-slider-max');
+        var minPriceInput = document.getElementById('min-price-input');
+        var maxPriceInput = document.getElementById('max-price-input');
+
+        var minPrice = parseInt(minPriceElement.textContent.replace(/\D/g, ''), 10);
+        var maxPrice = parseInt(maxPriceElement.textContent.replace(/\D/g, ''), 10);
+
+        minPriceInput.value = minPrice;
+        maxPriceInput.value = maxPrice;
+    }
+
+</script>

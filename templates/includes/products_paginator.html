@@ -1,0 +1,18 @@
+{% if products.has_next %}
+    {% if products.number <= products.paginator.page_range|last|add:-4 %}
+        <a
+                class="pagination-button pagination-button-{% if products.number == number %}active{% endif %}"
+                href="?page={{ products.paginator.page_range|last }}"
+        >
+            ...{{ products.paginator.page_range|last }}
+        </a>
+    {% endif %}
+    <a
+            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-700 transition-all duration-200 hover:bg-emerald-500 hover:text-white dark:bg-zinc-900 dark:text-white hover:dark:bg-emerald-600"
+            href="?page={{ products.next_page_number }}"
+    >
+        <svg class="h-6 w-6">
+            <use xlink:href="#chevron-left"></use>
+        </svg>
+    </a>
+{% endif %}

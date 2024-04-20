@@ -1,0 +1,206 @@
+{% load static %}
+<footer
+        class="relative border-t border-gray-100 bg-white dark:border-white/5 dark:bg-zinc-900"
+>
+    <!-- Footer Logo -->
+    <div class="absolute inset-x-0 -top-3 flex items-center justify-center">
+        <div class="relative flex h-10 w-14 justify-center">
+            <div
+                    class="absolute inset-0 -top-[2px] h-full w-full rounded-full bg-white blur-[6px] dark:bg-zinc-900"
+            ></div>
+
+            <svg
+                    class="relative h-5 w-5 text-gray-200"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="135"
+                    height="90"
+                    viewBox="0 0 14 14"
+            >
+                <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                >
+                    <circle cx="7" cy="7" r="6.5"/>
+                    <path
+                            d="M.5 7h13m-4 0A11.22 11.22 0 0 1 7 13.5A11.22 11.22 0 0 1 4.5 7A11.22 11.22 0 0 1 7 .5A11.22 11.22 0 0 1 9.5 7Z"
+                    />
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <!-- content -->
+    <div class="container">
+        <!-- Contact - Go to Top -->
+        <div
+                class="mt-10 flex flex-col items-center justify-between gap-y-4 md:flex-row"
+        >
+            <div
+                    class="flex flex-col items-center gap-x-4 gap-y-4 text-sm text-zinc-500 dark:text-zinc-300 md:flex-row"
+            >
+                <p>تلفن پشتیبانی 0000000 - 021</p>
+                <span
+                        class="hidden h-4 w-px rounded-full bg-gray-200 dark:bg-white/20 md:block"
+                ></span>
+                <p>۷ روز هفته، ۲۴ ساعته پاسخگوی شما هستیم</p>
+            </div>
+            <div class="order-first flex md:order-last">
+                <button
+                        class="inline-flex items-center gap-x-2 rounded-lg border border-gray-200 p-2 text-sm text-zinc-700 hover:bg-gray-200/20 dark:border-white/5 dark:text-white dark:hover:bg-white/5"
+                        id="scroll-top-button-footer"
+                        type="button"
+                >
+                    <span>برگشت به بالا</span>
+                    <span aria-hidden="true">
+                  <svg class="h-5 w-5 lg:h-6 lg:w-6">
+                    <use xlink:href="#chevron-up"/>
+                  </svg>
+                </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Subscribe - Social Links  -->
+        <div
+                class="relative mb-10 mt-10 flex flex-col items-center justify-between gap-x-4 gap-y-8 rounded-xl bg-gray-100 px-10 py-4 shadow-base backdrop-blur-3xl dark:bg-black md:flex-row"
+        >
+
+            <div class="flex items-center justify-center gap-x-10 md:gap-x-6">
+                <div
+                        class="text-zinc-700 transition-colors duration-200 hover:text-rose-600 dark:text-white hover:dark:text-rose-500"
+                >
+                    <a aria-label="Follow us on instagram" href="#" target="_blank">
+                        <div class="sr-only">instagram link</div>
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#instagram"/>
+                        </svg>
+                    </a>
+                </div>
+                <div
+                        class="text-zinc-700 transition-colors duration-200 hover:text-blue-600 dark:text-white hover:dark:text-blue-500"
+                >
+                    <a aria-label="Follow us on twitter" href="#" target="_blank">
+                        <div class="sr-only">x - twitter link</div>
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#twitter"/>
+                        </svg>
+                    </a>
+                </div>
+                <div
+                        class="text-zinc-700 transition-colors duration-200 hover:text-red-600 dark:text-white hover:dark:text-red-500"
+                >
+                    <a aria-label="Follow us on aparat" href="#" target="_blank">
+                        <div class="sr-only">aparat link</div>
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#aparat"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-y-10">
+            <div class="col-span-12 md:col-span-6">
+                <div
+                        class="grid grid-cols-12 justify-items-center md:justify-items-start"
+                >
+                    <div class="col-span-6 flex flex-col gap-y-6">
+                        <p class="select-none text-lg text-zinc-700 dark:text-white">
+                            روتی کالا
+                        </p>
+                        <ul class="space-y-4 text-zinc-500 dark:text-zinc-300">
+                            <li>
+                                <a
+                                        class="py-2 hover:text-emerald-500 hover:dark:text-emerald-400"
+                                        href="{% url 'return_terms' %}"
+                                >
+                                    شرایط مرجوعی
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                        class="py-2 hover:text-emerald-500 hover:dark:text-emerald-400"
+                                        href="{% url 'terms_and_rules' %}"
+                                >
+                                    قوانین و مقررات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-span-6 flex flex-col gap-y-6">
+                        <p class="select-none text-lg text-zinc-700 dark:text-white">
+                            دسترسی سریع
+                        </p>
+                        <ul class="space-y-4 text-zinc-500 dark:text-zinc-300">
+                            <li>
+                                <a
+                                        class="py-2 hover:text-emerald-500 hover:dark:text-emerald-400"
+                                        href="{% url 'contact_us' %}"
+                                >
+                                    تماس با ما
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                        class="py-2 hover:text-emerald-500 hover:dark:text-emerald-400"
+                                        href="{% url 'faq' %}"
+                                >
+                                    سوالات متداول
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                        class="py-2 hover:text-emerald-500 hover:dark:text-emerald-400"
+                                        href="{% url 'about_us' %}"
+                                >
+                                    درباره ما
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div
+                    class="col-span-12 flex items-center justify-center gap-x-2 md:col-span-6 md:justify-end"
+            >
+                <a href="#" class="relative">
+                    <img
+                            alt="namad"
+                            class="h-[130px] w-[130px] blur-sm"
+                            src="{% static 'index_app' %}/images/namad.png"
+                    />
+                    <!-- Delete This -->
+                    <span
+                            class="absolute inset-x-0 top-0 mx-auto w-fit rounded-lg bg-red-500 px-4 py-2 text-white dark:bg-red-600"
+                    >
+                  تستی
+                </span>
+                </a>
+                <a href="#" class="relative">
+                    <img
+                            alt="samandehi"
+                            class="h-[130px] w-[130px] blur-sm"
+                            src="{% static 'index_app' %}/images/samandehi.png"
+                    />
+                    <span
+                            class="absolute inset-x-0 top-0 mx-auto w-fit rounded-lg bg-red-500 px-4 py-2 text-white dark:bg-red-600"
+                    >
+                  تستی
+                </span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div
+                class="mt-4 flex items-center justify-center border-t border-gray-100 py-4 dark:border-white/5"
+        >
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 xs:text-sm">
+                کلیه حقوق این سایت متعلق به فروشگاه روتی کالا می‌باشد.
+            </p>
+        </div>
+    </div>
+</footer>
+

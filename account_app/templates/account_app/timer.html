@@ -1,0 +1,36 @@
+<script>
+    var expirationTime = {{ exp_time.total_seconds }}; // Assuming 'exp_time' is a timedelta
+
+    function updateTimer() {
+        var minutes = Math.floor(expirationTime / 60);
+        var seconds = Math.floor(expirationTime % 60);
+
+        // Format minutes and seconds with leading zeros
+        var formattedMinutes = String(minutes).padStart(2, '0');
+        var formattedSeconds = String(seconds).padStart(2, '0');
+
+        // Update the timer display
+        var timerElement = document.getElementById('timer');
+        timerElement.innerText = formattedMinutes + ':' + formattedSeconds;
+
+        // Decrease the remaining time
+        expirationTime--;
+
+        // Check if the timer has expired
+        {% if request.resolver_match.url_name == 'payment_gateway' %}
+            if (expirationTime < 0) {
+                window.location.reload()
+            }
+        {% else %}
+            if (expirationTime < 0) {
+                timerElement.style.display = 'none'
+                document.getElementById('ResendForm').style.display = 'block'
+                clearInterval(timerInterval); // Stop updating the timer
+            }
+        {% endif %}
+    }
+
+    updateTimer();
+
+    var timerInterval = setInterval(updateTimer, 1000);
+</script>

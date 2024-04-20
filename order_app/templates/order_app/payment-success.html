@@ -1,0 +1,78 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>سفارش موفق</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div
+                class="mx-auto max-w-[500px] rounded-lg bg-white p-5 dark:bg-zinc-900"
+        >
+            <!-- Head -->
+            <div class="flex flex-col items-center justify-center gap-y-4">
+                <div>
+                    <svg class="h-20 w-20 text-emerald-500 dark:text-emerald-400">
+                        <use xlink:href="#check"/>
+                    </svg>
+                </div>
+                <h1
+                        class="mb-8 text-center text-base text-emerald-500 dark:text-emerald-400 md:text-lg lg:text-xl"
+                >
+                    پرداخت فاکتور موفق بود!
+                </h1>
+            </div>
+
+            <div class="mb-6 flex items-center justify-center text-sm">
+                <div class="flex flex-col items-center gap-y-2 md:gap-y-4">
+                    <p class="font-medium text-zinc-700 dark:text-white md:text-lg">
+                        جرئیات پرداخت
+                    </p>
+                    <div class="flex items-center gap-x-4">
+                        <p class="text-zinc-600 dark:text-zinc-300">
+                            شماره پیگیری : <span class="tracking-wider">{{ order.unique_id }}</span>
+                        </p>
+                        <p class="text-zinc-600 dark:text-zinc-300">
+                            تاریخ : <span>{{ order.created_at.date }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-x-4">
+                <div class="w-full">
+                    <a href="{% url 'user_profile_order_detail' order.unique_id %}" class="btn-primary py-3"> پیگیری
+                        سفارش </a>
+                </div>
+                <div class="w-full">
+                    <a href="{% url 'index' %}" class="btn-secondary py-3"> صفحه اصلی </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+</body>
+</html>

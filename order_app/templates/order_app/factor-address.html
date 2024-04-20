@@ -1,0 +1,750 @@
+{% load static %}
+{% load humanize %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>انتخاب آدرس</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container pb-14">
+        <div class="grid grid-cols-12 gap-2 lg:gap-6">
+            <!-- breadCrumb -->
+            <div class="col-span-12 rounded-lg bg-white dark:bg-zinc-900">
+                <ol class="grid grid-cols-3 overflow-hidden rounded-lg">
+                    <li
+                            class="flex flex-col items-center justify-center gap-2 p-4 text-xs text-emerald-500 opacity-50 dark:text-emerald-400 sm:text-sm md:text-base"
+                    >
+                        <svg class="h-6 w-6 md:h-8 md:w-8">
+                            <use xlink:href="#check"/>
+                        </svg>
+                        <p class="leading-none">سبد خرید</p>
+                    </li>
+                    <li
+                            class="flex flex-col items-center justify-center gap-2 bg-emerald-500/10 p-4 text-xs text-emerald-500 dark:bg-emerald-400/10 dark:text-emerald-400 sm:text-sm md:text-base"
+                    >
+                        <svg class="h-6 w-6 md:h-8 md:w-8">
+                            <use xlink:href="#delivery-truck"/>
+                        </svg>
+                        <p class="leading-none">شیوه ارسال</p>
+                    </li>
+                    <li
+                            class="flex flex-col items-center justify-center gap-2 p-4 text-xs text-emerald-500 opacity-50 dark:text-emerald-400 sm:text-sm md:text-base"
+                    >
+                        <svg class="h-6 w-6 md:h-8 md:w-8">
+                            <use xlink:href="#credit"/>
+                        </svg>
+
+                        <p class="leading-none">پرداخت</p>
+                    </li>
+                </ol>
+            </div>
+            <!-- Content -->
+            <div class="col-span-12 md:col-span-8">
+                <div class="rounded-lg bg-white p-4 dark:bg-zinc-900">
+                    <!-- Address Section -->
+
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between gap-x-2 pb-4">
+                            <h1
+                                    class="flex items-center gap-x-4 text-sm text-zinc-700 dark:text-white xs:text-base md:text-lg"
+                            >
+                                آدرس تحویل سفارش
+                            </h1>
+                            <a href="{% url 'user_profile_address' factor.user.phone %}"
+                               class="btn-primary-nobg px-3 py-2 text-sm"
+                            >
+                      <span>
+                        <svg class="h-6 w-6">
+                          <use xlink:href="#address-add"></use>
+                        </svg>
+                      </span>
+                                <span> آدرس جدید </span>
+                            </a>
+                        </div>
+
+                        <fieldset class="space-y-2">
+                            <legend class="sr-only">Address</legend>
+                            {% for address in factor.user.address_set.all %}
+                                <div>
+                                    <input
+                                            {% if factor.address == address %}checked{% endif %}
+                                            type="radio"
+                                            name="address"
+                                            value="address-{{ address.id }}"
+                                            id="address-{{ address.id }}"
+                                            class="peer hidden"
+                                    />
+
+                                    <label
+                                            onclick="address({{ address.id }})"
+                                            for="address-{{ address.id }}"
+                                            class="relative block cursor-pointer rounded-lg border border-gray-100 p-4 shadow-base hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 peer-checked:dark:border-emerald-400"
+                                    >
+                                        <div
+                                                class="mb-4 flex items-center justify-between gap-x-2 sm:mb-2"
+                                        >
+                                            <p
+                                                    class="line-clamp-2 h-10 text-sm text-zinc-600 dark:text-zinc-300 xs:text-base sm:line-clamp-1 sm:h-6"
+                                            >
+                                                {{ address.address }}
+                                            </p>
+                                        </div>
+
+                                        <div class="flex items-center justify-between gap-x-2">
+                                            <p
+                                                    class="line-clamp-1 text-sm text-zinc-500 dark:text-zinc-400"
+                                            >
+                                                تایماز اکبری
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </fieldset>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"
+                                integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ=="
+                                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                        <script>
+                            function address(id) {
+                                let fd = new FormData();
+                                fd.append("address_id", id);
+                                axios.post(`/checkout-address/{{ factor.id }}`, fd, {
+                                    headers: {
+                                        'X-CSRFToken': '{{ csrf_token }}'
+                                    }
+                                })
+                                    .then(res => {
+                                        window.location.reload()
+                                    })
+                                    .catch(err => {
+                                        console.log(err)
+                                    });
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <!-- Cart Price Detail -->
+            <div class="col-span-12 md:col-span-4">
+                <!-- Desktop -->
+                <div
+                        class="hidden rounded-lg bg-white p-4 dark:bg-zinc-900 md:block"
+                >
+                    <div class="mb-2 divide-y divide-gray-100 dark:divide-white/5">
+                        <!-- cart items price before discount - coupon -->
+                        <div class="flex items-center justify-between gap-x-2 py-6">
+                            <div
+                                    class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                            >
+                                قیمت کالا ها ({{ factor.items.count }})
+                            </div>
+
+                            <div
+                                    class="text-sm text-emerald-500 dark:text-emerald-400 lg:text-base"
+                            >
+                                <span class="font-bold">{{ factor.get_total_price|intcomma:False }}</span>
+                                <span class="text-xs lg:text-sm">تومان</span>
+                            </div>
+                        </div>
+                        <!-- delivery price -->
+                        <div class="flex items-center justify-between gap-x-2 py-6">
+                            <div
+                                    class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                            >
+                                هزینه ارسال
+                            </div>
+
+                            <!-- <div class="text-sky-500 dark:text-sky-400  text-sm lg:text-base">
+                            <span class="font-bold">60,000</span>
+                            <span class="text-xs lg:text-sm">تومان</span>
+                          </div> -->
+
+                            <!-- <div class="text-sky-500 dark:text-sky-400  text-sm lg:text-base">
+                            <span class="font-bold">
+                              پرداخت در مقصد
+                            </span>
+                          </div> -->
+                            <div
+                                    class="text-sm text-sky-500 dark:text-sky-400 lg:text-base"
+                            >
+                                <span class="font-bold"> رایگان </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{% url 'factor_payment' factor.id %}" class="btn-primary py-3">
+                            ادامه فرایند خرید
+                        </a>
+                    </div>
+                </div>
+                <!-- Mobile -->
+                <div
+                        class="fixed inset-x-0 bottom-0 flex items-center gap-x-6 rounded-t-2xl bg-white p-4 dark:bg-zinc-900 md:hidden"
+                >
+                    <a
+                            class="btn-primary flex-grow py-3"
+                            href="{% url 'factor_payment' factor.id %}"
+                    >
+                        ادامه فرایند خرید</a
+                    >
+                    <div class="flex flex-col items-center gap-y-1">
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                            مبلغ قابل پرداخت
+                        </div>
+                        <div class="text-zinc-600 dark:text-zinc-300">
+                            <span class="font-bold">{{ factor.get_total_price|intcomma:False }}</span>
+                            <span class="text-sm">تومان</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Address Delete modal -->
+<div
+        id="address-delete-modal-1"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+</div>
+
+<!-- Address Add modal -->
+<div
+        id="address-add-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-2xl">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        ثبت آدرس جدید
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="address-add-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"/>
+                        </svg>
+
+                        <span class="sr-only">Close menu</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-6">
+                    <!-- Receiver name -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="name"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="name"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="نام گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نام گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver family -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="family"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="family"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="نام خانوادگی گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نام خانوادگی گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Phone number -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="phoneNumber"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="phoneNumber"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="شماره تماس گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      شماره تماس گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver National Code -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="nationalCode"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="nationalCode"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="کد ملی گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      کد ملی گیرنده
+                    </span>
+                        </label>
+                    </div>
+
+                    <!-- Receiver Address -->
+                    <div class="col-span-2">
+                        <label
+                                for="address"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                    <textarea
+                            type="text"
+                            id="address"
+                            rows="3"
+                            class="main-scroll peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                            placeholder="نشانی گیرنده"
+                    ></textarea>
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نشانی گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver City -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="city"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="city"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="شهر"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      شهر
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Province -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="province"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="province"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="استان"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      استان
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Building Info -->
+                    <div
+                            class="col-span-2 flex w-full items-center gap-x-4 gap-y-5 sm:col-span-1 sm:gap-6"
+                    >
+                        <label
+                                for="buildingNumber"
+                                class="relative block w-full rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="buildingNumber"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="پلاک"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      پلاک
+                    </span>
+                        </label>
+                        <label
+                                for="buildingUnit"
+                                class="relative block w-full rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="buildingUnit"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="واحد"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      واحد
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Postal Code -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="postalCode"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="postalCode"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="کد پستی"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      کد پستی
+                    </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="btn-primary w-full px-4 py-2 md:w-auto">
+                  <span>
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#address-add"/>
+                    </svg>
+                  </span>
+                        <span> ثبت آدرس جدید </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Address Edit modal -->
+<div
+        id="address-edit-modal-1"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-2xl">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        ویرایش آدرس
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="address-edit-modal-1"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"/>
+                        </svg>
+
+                        <span class="sr-only">Close menu</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-6">
+                    <!-- Receiver name -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="name"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="name"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="تایماز"
+                                    placeholder="نام گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نام گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver family -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="family"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="family"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="اکبری"
+                                    placeholder="نام خانوادگی گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نام خانوادگی گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Phone number -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="phoneNumber"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="phoneNumber"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="09999999999"
+                                    placeholder="شماره تماس گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      شماره تماس گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver National Code -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="nationalCode"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="nationalCode"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="1666666666"
+                                    placeholder="کد ملی گیرنده"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      کد ملی گیرنده
+                    </span>
+                        </label>
+                    </div>
+
+                    <!-- Receiver Address -->
+                    <div class="col-span-2">
+                        <label
+                                for="address"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                    <textarea
+                            type="text"
+                            id="address"
+                            rows="3"
+                            class="main-scroll peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                            placeholder="نشانی گیرنده"
+                    >
+استان تهران شهر تهران - خیابان گاندی جنوبی - نبش خیابان ۲۱ - پلاک ۲۸</textarea
+                    >
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نشانی گیرنده
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver City -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="city"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="city"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="تهران"
+                                    placeholder="شهر"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      شهر
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Province -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="province"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="province"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="تهران"
+                                    placeholder="استان"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      استان
+                    </span>
+                        </label>
+                    </div>
+
+                    <!-- Receiver Building Info -->
+                    <div
+                            class="col-span-2 flex w-full items-center gap-x-4 gap-y-5 sm:col-span-1 sm:gap-6"
+                    >
+                        <label
+                                for="buildingNumber"
+                                class="relative block w-full rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="buildingNumber"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="28"
+                                    placeholder="پلاک"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      پلاک
+                    </span>
+                        </label>
+                        <label
+                                for="buildingUnit"
+                                class="relative block w-full rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="buildingUnit"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="0"
+                                    placeholder="واحد"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      واحد
+                    </span>
+                        </label>
+                    </div>
+                    <!-- Receiver Postal Code -->
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="postalCode"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="postalCode"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    value="0000000000"
+                                    placeholder="کد پستی"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      کد پستی
+                    </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="btn-primary w-full px-4 py-2 md:w-auto">
+                  <span>
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#address-edit"/>
+                    </svg>
+                  </span>
+                        <span> ویرایش آدرس </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% include 'includes/messages.html' %}
+</body>
+</html>

@@ -1,0 +1,166 @@
+{% load static %}
+
+<div
+        class="sticky top-32 hidden w-full overflow-hidden rounded-lg bg-white shadow-base dark:bg-zinc-900 lg:block"
+>
+    <div
+            dir="ltr"
+            class="max-h-[calc(90vh_-_100px)] overflow-y-auto p-4 xl:p-6"
+    >
+        <div dir="rtl">
+            <!-- Head -->
+            <div
+                    class="mb-2 flex items-center justify-between border-b border-gray-200 pb-6 dark:border-white/10"
+            >
+                <div class="flex items-center gap-x-4">
+                    <div>
+                        <img
+                                src="{% static 'index_app' %}/images/user.png"
+                                class="h-12 w-12 rounded-full"
+                                alt=""
+                        />
+                    </div>
+                    <div class="flex flex-col">
+                        <div
+                                class="line-clamp-1 text-zinc-700 dark:text-white"
+                        >
+                            {{ request.user.fullname }}
+                        </div>
+                        <div
+                                class="line-clamp-1 text-zinc-600 dark:text-zinc-300"
+                        >
+                            {{ request.user.phone }}
+                        </div>
+                    </div>
+                </div>
+                <a href="./profile-edit.html">
+                    <svg
+                            class="h-6 w-6 text-emerald-500 dark:text-emerald-400"
+                    >
+                        <use xlink:href="#edit"/>
+                    </svg>
+                </a>
+            </div>
+            <ul class="space-y-1">
+                <li>
+                    <a
+                            href="{% url 'user_profile_dashboard' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_profile_dashboard' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#home"/>
+                            </svg>
+                            <div>پیشخوان</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_profile_orders' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_profile_orders' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#order"/>
+                            </svg>
+                            <div>سفارش ها</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_profile_favorites' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_profile_favorites' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#heart"/>
+                            </svg>
+                            <div>علاقه‌مندی ها</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_profile_prizes' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_profile_favorites' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#heart"/>
+                            </svg>
+                            <div>کلاب</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_profile_notifications' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_profile_notifications' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#notification"/>
+                            </svg>
+                            <div>پیام ها</div>
+                        </div>
+
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_profile_address' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_profile_address' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#address"/>
+                            </svg>
+                            <div>آدرس ها</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_edit_profile' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_edit_profile' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#user-setting"/>
+                            </svg>
+                            <div>اطلاعات حساب کاربری</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            href="{% url 'user_change_password' user.phone %}"
+                            class="profile-menu {% if request.resolver_match.url_name == 'user_change_password' %}profile-menu-active{% endif %} flex items-center justify-between rounded-lg px-2 py-4 xl:px-4"
+                    >
+                        <div class="flex items-center gap-x-4">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#user"/>
+                            </svg>
+                            <div>رمز عبور</div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a
+                            class="flex items-center justify-between rounded-lg p-4 text-red-500 hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-400/10"
+                            href="{% url 'user_logout' %}"
+                    >
+                        <div class="flex items-center gap-x-2">
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#exit"></use>
+                            </svg>
+                            <span> خروج </span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

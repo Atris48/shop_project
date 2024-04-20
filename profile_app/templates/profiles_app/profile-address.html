@@ -1,0 +1,544 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>آدرس ها</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% include 'profile_includes/desktop_menu.html' %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <div
+                            class="mb-16 flex flex-col items-center justify-between gap-y-8 xs:flex-row"
+                    >
+                        <!-- Title -->
+                        <h1
+                                class="relative w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                        >
+                            آدرس های شما
+                            <span
+                                    class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                            >
+                    </span>
+                        </h1>
+
+                        <button
+                                data-modal-target="address-add-modal"
+                                data-modal-toggle="address-add-modal"
+                                class="btn-primary w-full px-4 py-2 xs:w-fit"
+                        >
+                            <svg class="h-6 w-6">
+                                <use xlink:href="#address-add"></use>
+                            </svg>
+                            ثبت آدرس جدید
+                        </button>
+                    </div>
+                    <div
+                            class="space-y-4 divide-y divide-gray-100 dark:divide-white/5"
+                    >
+                        {% for address in user.address_set.all %}
+                            <div
+                                    class="block rounded-lg border border-gray-100 p-4 shadow-base hover:border-gray-200 dark:border-white/5 dark:hover:border-white/10"
+                            >
+                                <div
+                                        class="mb-4 flex items-center justify-between gap-x-2 sm:mb-2"
+                                >
+                                    <p
+                                            class="line-clamp-2 h-10 text-sm text-zinc-600 dark:text-zinc-300 xs:text-base sm:line-clamp-1 sm:h-6"
+                                    >
+                                        {{ address.address }}
+                                    </p>
+
+                                    <div class="hidden md:block">
+                                        <button
+                                                id="dropdownMenuIconButton"
+                                                data-dropdown-toggle="address-option-{{ address.id }}"
+                                                type="button"
+                                                class="rounded-full p-1 text-zinc-600 hover:bg-gray-100 dark:text-zinc-300 hover:dark:bg-black"
+                                        >
+                                            <svg class="h-6 w-6">
+                                                <use xlink:href="#vertical-dot"/>
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div
+                                                class="z-10 !ml-5 hidden w-50 overflow-hidden rounded-lg border border-gray-100 bg-white dark:border-white/5 dark:bg-zinc-900"
+                                                id="address-option-{{ address.id }}"
+                                        >
+                                            <ul class="space-y-2 p-2">
+                                                <li>
+                                                    <button
+                                                            type="button"
+                                                            data-modal-target="address-edit-modal-{{ address.id }}"
+                                                            data-modal-toggle="address-edit-modal-{{ address.id }}"
+                                                            class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sky-500 hover:bg-sky-500/10 dark:text-sky-400 dark:hover:bg-sky-400/10"
+                                                    >
+                                                        <div class="flex items-center gap-x-2">
+                                                            <svg class="h-6 w-6">
+                                                                <use xlink:href="#address-edit"></use>
+                                                            </svg>
+                                                            <span> ویرایش </span>
+                                                        </div>
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button
+                                                            type="button"
+                                                            data-modal-target="address-delete-modal-{{ address.id }}"
+                                                            data-modal-toggle="address-delete-modal-{{ address.id }}"
+                                                            class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-red-500 hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-400/10"
+                                                    >
+                                                        <div class="flex items-center gap-x-2">
+                                                            <svg class="h-6 w-6">
+                                                                <use xlink:href="#address-delete"></use>
+                                                            </svg>
+                                                            <span> حذف </span>
+                                                        </div>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-x-2">
+                                    <div class="flex items-center gap-x-2 md:hidden">
+                                        <button
+                                                data-modal-target="address-delete-modal-{{ address.id }}"
+                                                data-modal-toggle="address-delete-modal-{{ address.id }}"
+                                                class="btn-red-nobg px-3 py-1 text-sm xs:px-4 xs:py-2"
+                                        >
+                                            حذف
+                                        </button>
+                                        <button
+                                                data-modal-target="address-edit-modal-{{ address.id }}"
+                                                data-modal-toggle="address-edit-modal-{{ address.id }}"
+                                                class="btn-secondary-nobg px-3 py-1 text-sm xs:px-4 xs:py-2"
+                                        >
+                                            ویرایش
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <button
+                            data-modal-target="address-add-modal"
+                            data-modal-toggle="address-add-modal"
+                            class="w-full"
+                    >
+                        <div
+                                class="not-prose relative mt-6 flex rounded-md border border-gray-100 bg-white transition-all duration-150 hover:bg-gray-200 dark:border-white/5 dark:bg-zinc-900 hover:dark:bg-zinc-800"
+                        >
+                            <div
+                                    class="relative flex h-25 w-full select-none items-center justify-center overflow-hidden rounded opacity-75"
+                            >
+                                <svg
+                                        class="absolute inset-0 h-full w-full stroke-zinc-900/10 dark:stroke-white/10"
+                                        fill="none"
+                                >
+                                    <defs>
+                                        <pattern
+                                                id="pattern-5c1e4f0e-62d5-498b-8ff0-cf77bb448c8e"
+                                                x="0"
+                                                y="0"
+                                                width="10"
+                                                height="10"
+                                                patternUnits="userSpaceOnUse"
+                                        >
+                                            <path d="M-3 13 15-5M-5 5l18-18M-1 21 17 3"></path>
+                                        </pattern>
+                                    </defs>
+                                    <rect
+                                            stroke="none"
+                                            fill="url(#pattern-5c1e4f0e-62d5-498b-8ff0-cf77bb448c8e)"
+                                            width="100%"
+                                            height="100%"
+                                    ></rect>
+                                </svg>
+                                <svg
+                                        class="h-8 w-8 text-emerald-500 dark:text-emerald-400"
+                                >
+                                    <use xlink:href="#address-add"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Mobile Profile Menu Drawer -->
+{% include 'profile_includes/mobile_menu.html' %}
+<!-- Address Delete modal -->
+{% for address in user.address_set.all %}
+    <div
+            id="address-delete-modal-{{ address.id }}"
+            tabindex="-1"
+            aria-hidden="true"
+            class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+    >
+        <div class="relative max-h-full w-full max-w-md">
+            <div
+                    class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+            >
+                <div class="px-4 py-5 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                            حذف آدرس
+                        </h3>
+
+                        <button
+                                class="text-zinc-700 dark:text-white"
+                                data-modal-hide="address-delete-modal-{{ address.id }}"
+                                type="button"
+                        >
+                            <svg class="h-5 w-5">
+                                <use xlink:href="#close"></use>
+                            </svg>
+
+                            <span class="sr-only">Close Modal</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="space-y-6 px-4 py-5 sm:p-6">
+                    <p class="text-zinc-600 dark:text-zinc-300">
+                        آیا از حذف این آدرس اطمینان دارید؟
+                    </p>
+                    <div class="flex items-center justify-end gap-x-4">
+                        <button
+                                class="btn-secondary px-4 py-2 text-sm"
+                                data-modal-hide="address-delete-modal-{{ address.id }}"
+                                type="button"
+                        >
+                            انصراف
+                        </button>
+                        <a href="{% url 'user_profile_delete_address' address.id %}" class="btn-red px-4 py-2 text-sm" type="button">
+                            حذف آدرس
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+<!-- Address Add modal -->
+<div
+        id="address-add-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-2xl">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        ثبت آدرس جدید
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="address-add-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"/>
+                        </svg>
+
+                        <span class="sr-only">Close menu</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <form method="post" action="{% url 'user_profile_add_address' user.phone %}">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-6">
+                        {% for item in form %}
+                            {% if item.label == 'نشانی ارسال' %}
+                                <div class="col-span-2">
+                                    <label
+                                            for="address"
+                                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                    >
+                    <textarea
+                            name="{{ item.name }}"
+                            type="text"
+                            id="address"
+                            rows="3"
+                            class="main-scroll peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                            placeholder="نشانی گیرنده"
+                    ></textarea>
+
+                                        <span
+                                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                        >
+                      نشانی گیرنده
+                    </span>
+                                    </label>
+                                </div>
+                            {% else %}
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label
+                                            for="city"
+                                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                    >
+                                        <input
+                                                name="{{ item.name }}"
+                                                type="text"
+                                                id="city"
+                                                class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                                placeholder="شهر"
+                                        />
+
+                                        <span
+                                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                        >
+                      {{ item.label }}
+                    </span>
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="btn-primary w-full px-4 py-2 md:w-auto">
+                  <span>
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#address-add"/>
+                    </svg>
+                  </span>
+                            <span> ثبت آدرس جدید </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Address Edit modal -->
+{% for address in user.address_set.all %}
+    <form method="post" action="">
+        <input type="hidden" name="address_id" value="{{ address.id }}">
+        <div
+                id="address-edit-modal-{{ address.id }}"
+                tabindex="-1"
+                aria-hidden="true"
+                class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+        >
+            <div class="relative max-h-full w-full max-w-2xl">
+                <div
+                        class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+                >
+                    <div class="px-4 py-5 sm:px-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                                ویرایش آدرس
+                            </h3>
+
+                            <button
+                                    class="text-zinc-700 dark:text-white"
+                                    data-modal-hide="address-edit-modal-{{ address.id }}"
+                                    type="button"
+                            >
+                                <svg class="h-5 w-5">
+                                    <use xlink:href="#close"/>
+                                </svg>
+
+                                <span class="sr-only">Close menu</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-6 px-4 py-5 sm:p-6">
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-6">
+                            <!-- Receiver Address -->
+                            <div class="col-span-2">
+                                <label
+                                        for="address"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                    <textarea
+                            name="old_address"
+                            type="text"
+                            id="address"
+                            rows="3"
+                            class="main-scroll peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                            placeholder="نشانی گیرنده"
+                    >
+  {{ address.address }}</textarea
+                    >
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                      نشانی گیرنده
+                    </span>
+                                </label>
+                            </div>
+                            <!-- Receiver City -->
+                            <div class="col-span-2 sm:col-span-1">
+                                <label
+                                        for="city"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            name="city"
+                                            type="text"
+                                            id="city"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            value="{{ address.city }}"
+                                            placeholder="شهر"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                      شهر
+                    </span>
+                                </label>
+                            </div>
+                            <!-- Receiver Province -->
+                            <div class="col-span-2 sm:col-span-1">
+                                <label
+                                        for="province"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            name="state"
+                                            type="text"
+                                            id="province"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            value="{{ address.state }}"
+                                            placeholder="استان"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                      استان
+                    </span>
+                                </label>
+                            </div>
+                            <!-- Receiver Building Info -->
+                            <div
+                                    class="col-span-2 flex w-full items-center gap-x-4 gap-y-5 sm:col-span-1 sm:gap-6"
+                            >
+                                <label
+                                        for="buildingNumber"
+                                        class="relative block w-full rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            name="plaque"
+                                            type="text"
+                                            id="buildingNumber"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            value="{{ address.plaque }}"
+                                            placeholder="پلاک"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                      پلاک
+                    </span>
+                                </label>
+                                <label
+                                        for="buildingUnit"
+                                        class="relative block w-full rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            name="unit"
+                                            type="text"
+                                            id="buildingUnit"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            value="{{ address.unit }}"
+                                            placeholder="واحد"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                      واحد
+                    </span>
+                                </label>
+                            </div>
+                            <!-- Receiver Postal Code -->
+                            <div class="col-span-2 sm:col-span-1">
+                                <label
+                                        for="postalCode"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            name="postal_code"
+                                            type="text"
+                                            id="postalCode"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            value="{{ address.postal_code }}"
+                                            placeholder="کد پستی"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                      کد پستی
+                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn-primary w-full px-4 py-2 md:w-auto">
+                  <span>
+                    <svg class="h-5 w-5">
+                      <use xlink:href="#address-edit"/>
+                    </svg>
+                  </span>
+                                <span> ویرایش آدرس </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% csrf_token %}
+    </form>
+{% endfor %}
+
+</div>
+</body>
+</html>

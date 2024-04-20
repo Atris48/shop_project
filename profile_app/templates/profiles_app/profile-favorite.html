@@ -1,0 +1,121 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>علاقه مندی ها</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% include 'profile_includes/desktop_menu.html' %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <div
+                            class="mb-16 flex flex-col items-center justify-between gap-y-8 xs:flex-row"
+                    >
+                        <!-- Title -->
+                        <h1
+                                class="relative w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                        >
+                            علاقه‌مندی های شما
+                            <span
+                                    class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                            >
+                    </span>
+                        </h1>
+
+                    </div>
+                    <div
+                            class="mb-8 grid grid-cols-2 gap-1 gap-y-2 xs:gap-4 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                    >
+                        {% for product in user.product_fav.all %}
+                            <div
+                                    class="border-gradient group relative rounded-base border border-gray-100 p-px before:absolute before:-inset-px before:h-[calc(100%+2px)] before:w-[calc(100%+2px)] before:rounded-base dark:border-white/5"
+                            >
+                                <div
+                                        class="relative rounded-xl bg-white p-2 shadow-base dark:bg-zinc-900 md:p-5"
+                                >
+                                    <!-- image -->
+                                    <div class="mb-2 md:mb-5" draggable="false">
+                                        <a href="{% url 'product_detail' product.slug %}">
+                                            <img
+                                                    alt=""
+                                                    class="mx-auto w-32 rounded-lg md:w-auto"
+                                                    src="{{ product.poster.url }}"
+                                            />
+                                        </a>
+                                    </div>
+                                    <!-- title -->
+                                    <div class="mb-2">
+                                        <a
+                                                class="line-clamp-2 h-10 text-sm text-zinc-700 dark:text-white md:h-12 md:text-base"
+                                                href="{% url 'product_detail' product.slug %}"
+                                        >
+                                            {{ product.title }}
+                                        </a>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div
+                                                class="text-sm font-medium text-emerald-500 dark:text-emerald-400 xs:text-base"
+                                        >
+                                            {% if product.is_available %}
+                                                موجود
+                                            {% else %}
+                                                ناموجود
+                                            {% endif %}
+                                        </div>
+                                        <form action="" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="slug" value="{{ product.slug }}">
+                                            <button
+                                                    type="submit"
+                                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-red-500 transition-all duration-200 hover:bg-red-500 hover:text-gray-100 dark:bg-black dark:text-red-400 hover:dark:bg-red-400 hover:dark:text-black"
+                                            >
+                                                <svg class="h-6 w-6">
+                                                    <use xlink:href="#trash"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'profile_includes/mobile_menu.html' %}
+</div>
+</body>
+</html>

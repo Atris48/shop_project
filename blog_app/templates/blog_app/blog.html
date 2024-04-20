@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'blog_app' %}/css/bootstrap.rtl.css">
+    <link rel="stylesheet" href="{% static 'blog_app' %}/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'blog_app' %}/css/style.css">
+    <title>وبلاگ</title>
+</head>
+<body>
+
+{% include 'blog_includes/nav.html' %}
+<main><!-- start main -->
+    <div class="container">
+
+        <div class="row mt-3"><!-- start top banner -->
+            <div class="col-12">
+                <a href="{{ ads_image.url|default:'' }}" target="_blank" class="w-100 d-block">
+                    <img src="{{ ads_image.image.url }}" class="blog-pic">
+                </a>
+            </div>
+        </div><!-- end top banner -->
+
+        <div class="row">
+
+            <div class="col-lg-8"><!-- start blog slider -->
+
+                <div class="carousel slide" data-bs-ride="carousel" id="blog-slider">
+                    <div class="carousel-indicators">
+                        {% for slide_article in chosen_articles.slide_articles.all %}
+                            <button type="button" data-bs-target="#blog-slider"
+                                    data-bs-slide-to="{{ forloop.counter0 }}"
+                                    class="{% if forloop.first %}active{% endif %}"></button>
+                        {% endfor %}
+
+                    </div>
+                    <div class="carousel-inner mb-3">
+                        {% for slide_article in chosen_articles.slide_articles.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <a href="{{ slide_article.get_absolute_url }}" class="d-block">
+                                    <img src="{{ slide_article.poster.url }}" class="d-block w-100">
+                                    <div class="carousel-caption">
+                                        <p class="font-13">{{ slide_article.title }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="carousel-control-prev" data-bs-target="#blog-slider"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button type="button" class="carousel-control-next" data-bs-target="#blog-slider"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+
+            </div><!-- end blog slider -->
+
+            <div class="col-lg-4"><!-- start left pic box -->
+                <div class="row">
+
+                    {% for article in chosen_articles.two_articles.all|slice:2 %}
+                        <div class="col-12 mb-3">
+                            <a href="{{ article.get_absolute_url }}" class="sub-layer">
+                                <img src="{{ article.poster.url }}" class="blog-pic">
+                                <div class="pic-mask">
+                                    <p>{{ article.title }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+            </div><!-- end left pic box -->
+
+        </div>
+
+        <div class="row mt-3"><!-- start title -->
+            <div class="col-12 d-flex align-items-center">
+                <h1 class="blog-title-text">جدیدترین مقالات </h1>
+                <div class="blog-title-line"></div>
+                <a href="{% url 'article_list' %}" class="blog-title-btn">همه مقالات </a>
+            </div>
+        </div><!-- end title -->
+
+        <div class="row mt-3"><!-- start new blog posts -->
+
+            {% for article in articles %}
+                <div class="col-lg-3 col-sm-6 mb-3"><!-- start item -->
+                    <div class="card border-0 custom-blog-card">
+                        <div class="sub-layer">
+                            <img src="{{ article.poster.url }}" class="img-fluid">
+                            <div class="over-layer">
+                                <a href="{% url 'category_detail' article.categories.first.slug %}"
+                                   class="image-badge">{{ article.categories.first.title }}</a>
+                            </div>
+                        </div>
+                        <div class="card-body pb-0">
+                            <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                            <p>
+                                {{ article.short_description|default:'' }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                            <span class="writer">{{ article.visit_count }}</span>
+                            <div class="float-end mt-2">
+                                <span class="time">{{ article.get_created_at }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end item -->
+            {% endfor %}
+
+
+        </div><!-- end new blog posts -->
+
+        <div class="row mt-3"><!-- start title -->
+            <div class="col-12 d-flex align-items-center">
+                <h1 class="blog-title-text">پربازدید ترین ها</h1>
+                <div class="blog-title-line"></div>
+                <a href="{% url 'article_list' %}" class="blog-title-btn">همه مقالات </a>
+            </div>
+        </div><!-- end title -->
+
+
+        <div class="row mt-3"><!-- start best blog posts -->
+            {% for article in most_view %}
+                <div class="col-lg-3 col-sm-6 mb-3"><!-- start item -->
+                    <div class="card border-0 custom-blog-card">
+                        <div class="sub-layer">
+                            <img src="{{ article.poster.url }}" class="img-fluid">
+                            <div class="over-layer">
+                                <a href="{% url 'category_detail' article.categories.first.slug %}"
+                                   class="image-badge">{{ article.categories.first.title }}</a>
+                            </div>
+                        </div>
+                        <div class="card-body pb-0">
+                            <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                            <p>
+                                {{ article.short_description|default:'' }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                            <span class="writer">{{ article.visit_count }}</span>
+                            <div class="float-end mt-2">
+                                <span class="time">{{ article.get_created_at }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end item -->
+            {% endfor %}
+        </div><!-- end best blog posts -->
+
+    </div>
+</main><!-- end main -->
+
+{% include 'blog_includes/footer.html' %}
+
+<script src="{% static 'blog_app' %}/js/jquery.min.js"></script>
+<script src="{% static 'blog_app' %}/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'blog_app' %}/js/blog-js.js"></script>
+</body>
+</html>

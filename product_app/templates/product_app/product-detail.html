@@ -1,0 +1,1803 @@
+{% load static %}
+{% load humanize %}
+{% load product_custom_filters %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>جزئیات محصول</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"
+            integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <!-- Desktop Product Detail -->
+        <div class="hidden lg:block">
+            <!-- Product Detail Section -->
+            <div
+                    class="mb-6 rounded-lg bg-white p-6 shadow-base dark:bg-zinc-900"
+            >
+                <div class="mb-6 grid flex-grow grid-cols-12 gap-4">
+                    <div class="col-span-4">
+                        <div class="min-w-fit space-y-2">
+                            <!-- Product other actions -->
+                            <div class="py-2">
+                                <div
+                                        class="flex items-center gap-x-4 text-zinc-700 dark:text-white"
+                                >
+                                    <!-- add to favorite -->
+                                    {% if request.user.is_authenticated %}
+                                        <div>
+                                            <button id="deskFav" onclick="desktop_fav()"
+                                                    data-tooltip-target="add-to-favorite"
+                                                    type="button"
+                                            >
+                                                {% if request.user in product.favorites.all %}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                                         fill="currentColor" class="bi bi-suit-heart-fill"
+                                                         viewBox="0 0 16 16">
+                                                        <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1z"/>
+                                                    </svg>
+                                                {% else %}
+                                                    <svg class="h-6 w-6">
+                                                        <use xlink:href="#heart"/>
+                                                    </svg>
+                                                {% endif %}
+                                            </button>
+                                            {% if not request.user in product.favorites.all %}
+                                                <div
+                                                        id="add-to-favorite"
+                                                        role="tooltip"
+                                                        class="tooltip invisible absolute z-10 inline-block rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-zinc-800"
+                                                >
+                                                    افزودن به علاقه‌مندی ها
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    <!-- share on social -->
+                                    <div>
+                                        <button
+                                                id="dropdownMenuCopySocialShareLink"
+                                                data-dropdown-toggle="copy-social-share-link"
+                                                data-tooltip-target="share-on-social"
+                                                type="button"
+                                        >
+                                            <svg class="h-6 w-6">
+                                                <use xlink:href="#social-share"/>
+                                            </svg>
+                                        </button>
+                                        <div
+                                                id="share-on-social"
+                                                role="tooltip"
+                                                class="tooltip invisible absolute z-10 inline-block rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-zinc-800"
+                                        >
+                                            اشتراک گذاری
+                                        </div>
+                                        <!-- Dropdown menu -->
+                                        <div
+                                                class="z-10 !ml-5 hidden w-50 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-base dark:border-white/5 dark:bg-zinc-900"
+                                                id="copy-social-share-link"
+                                        >
+                                            <ul class="space-y-2 p-2">
+                                                <li>
+                                                    <button
+                                                            type="button"
+                                                            data-link="{{ product.get_share_link }}"
+                                                            onclick="copyToClipboardSocialShareDesktop(this)"
+                                                            class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sky-500 hover:bg-sky-500/10 dark:text-sky-400 dark:hover:bg-sky-400/10"
+                                                    >
+                                                        <div class="flex items-center gap-x-2">
+                                                            <svg class="h-6 w-6">
+                                                                <use xlink:href="#copy"></use>
+                                                            </svg>
+                                                            <span id="copyToClipboardSocialShareText">
+                                      کپی کردن لینک
+                                    </span>
+                                                        </div>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Main image -->
+                            <div>
+                                {% if product.poster %}
+                                    <img
+                                            src="{{ product.poster.url }}"
+                                            alt=""
+                                            class="mx-auto"
+                                            loading="lazy"
+                                    />
+                                {% endif %}
+                            </div>
+                            <!-- Gallery -->
+                            <div class="flex items-center justify-center gap-x-2">
+                                {% for image in product.image.all %}
+                                    <button
+                                            type="button"
+                                            data-modal-target="product-gallery-modal"
+                                            data-modal-toggle="product-gallery-modal"
+                                            class="cursor-pointer rounded-lg border border-gray-100 p-1 dark:border-white/5"
+                                    >
+                                        <img
+                                                src="{{ image.image.url }}"
+                                                alt=""
+                                                class="h-16 w-16 xl:h-20 xl:w-20"
+                                                loading="lazy"
+                                        />
+                                    </button>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-8 flex min-h-full flex-col">
+                        <!-- Main Title ( persian ) -->
+                        <h1
+                                class="mb-4 text-lg font-semibold text-zinc-700 dark:text-white"
+                        >
+                            {{ product.title }}
+                        </h1>
+
+                        <div class="grid flex-grow grid-cols-2 gap-x-4">
+                            <!-- right side -->
+                            <div class="col-span-1">
+                                <!-- comments & SKU -->
+                                <div
+                                        class="mb-4 flex items-center gap-x-4 text-sm font-light text-emerald-500 dark:text-emerald-400"
+                                >
+                                    <div>
+                                        <a href="#"> کد کالا {{ product.id }}# </a>
+                                    </div>
+                                    <span
+                                            class="h-4 w-px rounded-full bg-gray-200 dark:bg-white/10"
+                                    ></span>
+                                    <div>
+                                        <a href="#"> {{ product.productcomment_set.count }} دیدگاه </a>
+                                    </div>
+                                </div>
+                                <!-- users suggestion -->
+                                {% if product.productcomment_set.count > 0 %}
+                                    <div class="mb-4 flex gap-x-2">
+                                        <svg
+                                                class="h-4 w-4 text-emerald-500 dark:text-emerald-400"
+                                        >
+                                            <use xlink:href="#like"/>
+                                        </svg>
+                                        <p
+                                                class="text-sm font-light text-zinc-500 dark:text-zinc-400"
+                                        >
+                                            {{ product.get_rate|floatformat:1 }}% از خریداران، خرید این کالا را پیشنهاد
+                                            کرده‌اند
+                                        </p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Property -->
+                                <div>
+                                    <p
+                                            class="mb-6 font-medium text-zinc-700 dark:text-white"
+                                    >
+                                        ویژگی های محصول
+                                    </p>
+
+                                    <ul class="space-y-4">
+                                        {% for property in product.property.all %}
+                                            <li class="flex gap-x-2">
+                                                <div
+                                                        class="min-w-fit text-zinc-500 dark:text-zinc-400"
+                                                >
+                                                    {{ property.value }}
+                                                </div>
+
+                                            </li>
+                                        {% endfor %}
+
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- left side -->
+                            <div class="col-span-1 flex flex-col">
+                                {% if product.is_available %}
+                                    {% if product.inventory == None %}
+                                        <div class="flex-grow">
+                                            <!-- variant -->
+                                            <div class="mb-6 space-y-6">
+                                                <!-- Size -->
+                                                {% if sizes|length > 0 %}
+                                                    <div>
+                                                        <div class="mb-4 text-zinc-700 dark:text-white">
+                                                            انتخاب سایز
+                                                        </div>
+                                                        <fieldset class="flex flex-wrap items-center gap-2">
+                                                            <legend class="sr-only">Size</legend>
+                                                            {% for size in sizes %}
+                                                                <div>
+                                                                    <input
+                                                                            checked
+                                                                            type="radio"
+                                                                            name="size-desktop"
+                                                                            value="size-desktop-{{ forloop.counter0 }}"
+                                                                            id="size-desktop-{{ forloop.counter0 }}"
+                                                                            class="peer hidden"
+                                                                    />
+
+                                                                    <label
+                                                                            id="{{ size }}"
+                                                                            onclick="get_colors('{{ size }}')"
+                                                                            for="size-desktop-{{ forloop.counter0 }}"
+                                                                            class="relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border-2 border-gray-100 p-1 shadow-base "
+                                                                    >
+                                                                        <p
+                                                                                class="text-sm font-bold text-zinc-600 dark:text-zinc-300 md:text-base"
+                                                                        >
+                                                                            {{ size }}
+                                                                        </p>
+                                                                    </label>
+                                                                </div>
+                                                            {% endfor %}
+
+
+                                                        </fieldset>
+                                                    </div>
+                                                    <div>
+                                                        <div style="display: none" id="chooseColor"
+                                                             class="mb-4 text-zinc-700 dark:text-white">
+                                                            انتخاب رنگ
+                                                        </div>
+                                                        <fieldset id="colors" class="flex flex-wrap items-center gap-1">
+                                                            <legend class="sr-only">Color</legend>
+                                                        </fieldset>
+                                                    </div>
+                                                {% elif sizes|length == 0 and colors|length > 0 %}
+                                                    <div>
+                                                        <div
+                                                                class="mb-4 text-zinc-700 dark:text-white">
+                                                            انتخاب رنگ
+                                                        </div>
+                                                        <fieldset class="flex flex-wrap items-center gap-1">
+                                                            {% for color in colors %}
+                                                                <div>
+                                                                    <input
+                                                                            checked
+                                                                            type="radio"
+                                                                            name="color-desktop"
+                                                                            value="color-desktop-{{ forloop.counter }}"
+                                                                            id="color-desktop-{{ forloop.counter }}"
+                                                                            class="peer hidden"
+                                                                    />
+
+                                                                    <label
+                                                                            id='{{ color }}'
+                                                                            onclick="set_color_value('{{ color }}')"
+                                                                            for="color-desktop-{{ forloop.counter }}"
+                                                                            class="relative block cursor-pointer rounded-full border-2 border-gray-100 p-2 shadow-base "
+                                                                    >
+                                                                        <div class="flex items-center gap-x-2">
+                                                                            <div
+                                                                                    class="h-6 w-6 rounded-full border-2 border-gray-200 shadow-base dark:border-white/30"
+                                                                                    style="background-color: {{ color|get_en_title }}"
+                                                                            ></div>
+                                                                            <p class="text-zinc-600 dark:text-zinc-300">
+                                                                                {{ color }}
+                                                                            </p>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            {% endfor %}
+
+                                                        </fieldset>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                                {% if product.is_available %}
+                                    <div class="flex h-10 w-24 items-center justify-center gap-x-3 rounded-lg border border-gray-100 px-4 py-1 dark:border-white/5">
+                                        <button type="button" id="plus-btn">
+                                            <svg class="h-5 w-5 text-emerald-500 dark:text-emerald-400">
+                                                <use xlink:href="#plus"/>
+                                            </svg>
+                                        </button>
+                                        <div id="counter"
+                                             class="flex h-5 w-5 select-none items-center justify-center text-sm text-zinc-700 dark:text-white">
+                                            1
+                                        </div>
+                                        <button type="button" id="minus-btn">
+                                            <svg class="h-5 w-5 text-emerald-500 dark:text-emerald-400">
+                                                <use xlink:href="#minus"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <br>
+                                {% endif %}
+                                <script>
+                                    function set_color_value(color) {
+                                        document.getElementById(`${color}`).className += 'hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 '
+                                        document.getElementById('colorInp').value = color
+                                    }
+
+                                    function get_colors(size) {
+                                        document.getElementById('sizeInp').value = size
+                                        document.getElementById(`${size}`).className += 'hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 '
+                                        let fd = new FormData();
+                                        fd.append("size", size);
+                                        axios.get(`/get-product-colors/{{ product.slug }}`, {
+                                            params: {
+                                                size: size
+                                            }
+                                        })
+                                            .then(res => {
+                                                var div = document.getElementById('colors')
+                                                div.innerHTML = ''
+                                                var index = 0;
+                                                var items = res.data.colors;
+                                                items.map(function (item) {
+                                                    document.getElementById('chooseColor').style.display = 'block'
+                                                    div.innerHTML +=
+                                                        `<div>
+                                                        <input
+                                                                checked
+                                                                type="radio"
+                                                                name="color-desktop"
+                                                                value="color-desktop-${index}"
+                                                                id="color-desktop-${index}"
+                                                                class="peer hidden"
+                                                        />
+
+                                                        <label
+                                                                id='${item}'
+                                                                onclick="set_color_value('${item}')"
+                                                                for="color-desktop-${index}"
+                                                                class="relative block cursor-pointer rounded-full border-2 border-gray-100 p-2 shadow-base "
+                                                        >
+                                                            <div class="flex items-center gap-x-2">
+                                                                <div
+                                                                        class="h-6 w-6 rounded-full border-2 border-gray-200 shadow-base dark:border-white/30"
+                                                                        style="background-color: ${res.data.en_titles[index]}"
+                                                                ></div>
+                                                                <p class="text-zinc-600 dark:text-zinc-300">
+                                                                    ${item}
+                                                                </p>
+                                                            </div>
+                                                        </label>
+                                                    </div>`
+                                                    index += 1;
+                                                });
+                                            })
+                                            .catch(err => {
+                                                console.error('Error:', err);
+                                            });
+                                    }
+                                </script>
+                                <script>
+                                    // Get references to the plus and minus buttons and the counter element
+                                    const plusBtn = document.getElementById('plus-btn');
+                                    const minusBtn = document.getElementById('minus-btn');
+                                    const counter = document.getElementById('counter');
+
+                                    // Initial counter value
+                                    let count = 1;
+
+                                    // Function to update the counter value and display
+                                    function updateCounter() {
+                                        counter.textContent = count;
+                                    }
+
+                                    // Event listener for the plus button click
+                                    plusBtn.addEventListener('click', function () {
+                                        count++; // Increment the counter value
+                                        document.getElementById('quantityInp').value = count
+                                        updateCounter(); // Update the displayed value
+                                    });
+
+                                    // Event listener for the minus button click
+                                    minusBtn.addEventListener('click', function () {
+                                        if (count > 1) {
+                                            count--; // Decrement the counter value if it's greater than 1
+                                            document.getElementById('quantityInp').value = count
+                                            updateCounter(); // Update the displayed value
+                                        }
+                                    });
+
+                                </script>
+                                <div>
+                                    <!-- verified text -->
+
+                                    {% if product.is_available %}
+                                        {% if product.discounted_price %}
+                                            <div class="flex items-center gap-x-2">
+                                                <div>
+                                                    <del
+                                                            class="text-sm text-zinc-500 decoration-red-600 dark:text-zinc-400 dark:decoration-red-500 md:text-base"
+                                                    >
+                                                        {{ product.price|intcomma:False }}
+                                                    </del>
+                                                </div>
+                                                <div
+                                                        class="flex w-10 items-center justify-center rounded-full bg-red-500 py-0.5 text-sm font-bold text-white dark:bg-red-600"
+                                                >
+                                                    {{ product.discounted_percentage|default:'' }}%
+                                                </div>
+                                            </div>
+                                            <!-- price -->
+                                            <div
+                                                    class="mb-6 flex items-center justify-end gap-x-1 text-emerald-500 dark:text-emerald-400"
+                                            >
+                                                <span class="text-xl font-bold">{{ product.discounted_price|intcomma:False }}</span>
+                                                <span>تومان</span>
+                                            </div>
+                                        {% else %}
+                                            <div
+                                                    class="mb-6 flex items-center justify-end gap-x-1 text-emerald-500 dark:text-emerald-400"
+                                            >
+                                                <span class="text-xl font-bold">{{ product.price|intcomma:False }}</span>
+                                                <span>تومان</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                    <!-- add to cart -->
+                                    <p style="color: deepskyblue">هزینه ارسال رایگان</p>
+                                    {% if product.is_available %}
+                                        {% if product.inventory != None or product.attributes.count > 0 %}
+                                            <br>
+                                            <form action="" method="post">
+                                                {% csrf_token %}
+                                                <div class="mb-6">
+                                                    <input type="hidden" name="color" id="colorInp">
+                                                    <input type="hidden" name="size" id="sizeInp">
+                                                    <input type="hidden" value="1" name="quantity" id="quantityInp">
+                                                    <button class="btn-primary w-full py-3">
+                                                        افزودن به سبد خرید
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            <div
+                                                    class="mb-6 flex items-center gap-x-2 rounded-lg bg-emerald-500/10 p-4 text-sm text-emerald-500 dark:bg-emerald-400/5 dark:text-emerald-400"
+                                            >
+                                                <svg class="h-6 w-6">
+                                                    <use xlink:href="#verified"/>
+                                                </svg>
+                                                تضمین سلامت فیزیکی و اصالت کالا
+                                            </div>
+                                        {% else %}
+                                            <button style="background-color: rgba(255,0,0,0.87)"
+                                                    class="btn-primary w-full py-3">
+                                                ناموجود
+                                            </button>
+                                        {% endif %}
+                                    {% else %}
+                                        <button style="background-color: rgba(255,0,0,0.8)"
+                                                class="btn-primary w-full py-3">
+                                            ناموجود
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <div
+                            class="flex w-full items-center gap-x-2 rounded-lg border border-gray-100 px-2 py-4 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#refund"/>
+                        </svg>
+                        هفت روز ضمانت بازگشت کالا
+                    </div>
+
+                    <div
+                            class="flex w-full items-center gap-x-2 rounded-lg border border-gray-100 px-2 py-4 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#verified"/>
+                        </svg>
+                        تضمین اصالت کالا
+                    </div>
+                    <div
+                            class="flex w-full items-center gap-x-2 rounded-lg border border-gray-100 px-2 py-4 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#support"/>
+                        </svg>
+                        هفت روز هفته
+                    </div>
+                    <div
+                            class="flex w-full items-center gap-x-2 rounded-lg border border-gray-100 px-2 py-4 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#fast-delivery"/>
+                        </svg>
+                        تحویل اکسپرس در تهران, کرج
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Product Detail-->
+        <div class="lg:hidden">
+            <!-- breadcrumb -->
+            <!-- Product Detail Section -->
+            <div
+                    class="mb-6 rounded-lg bg-white p-4 shadow-base dark:bg-zinc-900"
+            >
+                <!-- Product Gallery -->
+                <div class="relative mb-4">
+                    <div class="swiper product-image-mobile-swiper">
+                        <div class="swiper-wrapper">
+                            {% for image in product.image.all %}
+                                {% if product.poster %}
+                                    <div class="swiper-slide">
+                                        <img
+                                                src="{{ product.poster.url }}"
+                                                alt=""
+                                                class="mx-auto"
+                                                loading="lazy"
+                                        />
+                                    </div>
+                                {% endif %}
+                                <div class="swiper-slide">
+                                    <img
+                                            src="{{ image.image.url }}"
+                                            alt=""
+                                            class="mx-auto"
+                                            loading="lazy"
+                                    />
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                        <div class="swiper-pagination text-left"></div>
+                    </div>
+                    <div class="absolute left-0 top-0 z-10">
+                        <div
+                                class="flex items-center gap-x-4 text-zinc-700 dark:text-white"
+                        >
+                            <!-- add to favorite -->
+                            <div>
+                                <button onclick="mob_fav()" id="mobFav">
+                                    {% if request.user in product.favorites.all %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                             fill="currentColor" class="bi bi-suit-heart-fill"
+                                             viewBox="0 0 16 16">
+                                            <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1z"/>
+                                        </svg>
+                                    {% else %}
+                                        <svg class="h-6 w-6">
+                                            <use xlink:href="#heart"/>
+                                        </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+
+                            <!-- share on social -->
+                            <div class="relative">
+                                <button
+                                        type="button"
+                                        onclick="copyToClipboardSocialShareMobile(this)"
+                                        data-link="{{ product.get_share_link }}"
+                                >
+                                    <svg class="h-6 w-6">
+                                        <use xlink:href="#social-share"/>
+                                    </svg>
+                                </button>
+                                <div
+                                        id="notify-copied-social-share-link-mobile"
+                                        class="absolute left-0 top-full z-10 hidden w-24 rounded-lg bg-zinc-900 px-3 py-2 text-center text-sm font-medium text-white shadow-sm transition-opacity duration-300 dark:bg-zinc-800"
+                                >
+                                    کپی شد !
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- title -->
+                <div
+                        class="mb-4 font-semibold text-zinc-700 dark:text-white md:text-lg"
+                >
+                    {{ product.title }}
+                </div>
+                <!-- comments & SKU -->
+                <div
+                        class="flex gap-x-4 text-sm font-light text-emerald-500 dark:text-emerald-400 md:text-base"
+                >
+                    <div>
+                        <a href=#"> کد کالا {{ product.id }}# </a>
+                    </div>
+                    <div>
+                        <a href=""> {{ product.productcomment_set.count }} دیدگاه </a>
+                    </div>
+                </div>
+                {% if product.productcomment_set.count > 0 %}
+                    <div class="mb-4 flex gap-x-2">
+                        <svg
+                                class="h-4 w-4 text-emerald-500 dark:text-emerald-400"
+                        >
+                            <use xlink:href="#like"/>
+                        </svg>
+                        <p
+                                class="text-sm font-light text-zinc-500 dark:text-zinc-400"
+                        >
+                            {{ product.get_rate|floatformat:1 }}% از خریداران، خرید این کالا را پیشنهاد
+                            کرده‌اند
+                        </p>
+                    </div>
+                {% endif %}
+                <div class="my-4 h-px w-full bg-gray-100 dark:bg-white/5"></div>
+                <!-- variant -->
+                {% if product.is_available %}
+                    <div class="mb-6 space-y-4">
+                        {% if product.inventory == None %}
+                            {% if sizes|length > 0 %}
+                                <div
+                                        class="mb-4 text-sm text-zinc-700 dark:text-white md:text-base"
+                                >
+                                    انتخاب سایز
+                                </div>
+                                <fieldset class="flex flex-wrap items-center gap-2">
+                                    <legend class="sr-only">Size</legend>
+
+                                    {% for size in sizes %}
+                                        <div>
+                                            <input
+                                                    checked
+                                                    type="radio"
+                                                    name="size-mobile"
+                                                    value="size-mobile-{{ forloop.counter0 }}"
+                                                    id="size-mobile-{{ forloop.counter0 }}"
+                                                    class="peer hidden"
+                                            />
+
+                                            <label
+                                                    id="size-{{ size }}"
+                                                    onclick="mobile_get_colors('{{ size }}')"
+                                                    for="size-mobile-{{ forloop.counter0 }}"
+                                                    class="relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border-2 border-gray-100 p-1 shadow-base"
+                                            >
+                                                <p
+                                                        class="text-sm font-bold text-zinc-600 dark:text-zinc-300 md:text-base"
+                                                >
+                                                    {{ size }}
+                                                </p>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                                <div style="display: none" id="mobchooseColor"
+                                     class="text-sm text-zinc-700 dark:text-white md:text-base">
+                                    انتخاب رنگ
+                                </div>
+                                <fieldset id="mobColors" class="flex flex-wrap items-center gap-1">
+
+                                </fieldset>
+                            {% elif sizes|length == 0 and colors|length > 0 %}
+                                <div id="mobchooseColor"
+                                     class="text-sm text-zinc-700 dark:text-white md:text-base">
+                                    انتخاب رنگ
+                                </div>
+                                <fieldset id="mobColors" class="flex flex-wrap items-center gap-1">
+                                    {% for color in colors %}
+                                        <div>
+                                            <input
+                                                    checked
+                                                    type="radio"
+                                                    name="color"
+                                                    value="color-{{ forloop.counter }}"
+                                                    id="color-{{ forloop.counter }}"
+                                                    class="peer hidden"
+                                            />
+
+                                            <label
+                                                    id='color-{{ color }}'
+                                                    onclick="mobile_set_color_value('{{ color }}')"
+                                                    for="color-{{ forloop.counter }}"
+                                                    class="relative block cursor-pointer rounded-full border-2 border-gray-100 p-2 shadow-base"
+                                            >
+                                                <div class="flex items-center gap-x-2">
+                                                    <div
+                                                            class="h-5 w-5 rounded-full border-2 border-gray-200 shadow-base dark:border-white/30"
+                                                            style="background-color: {{ color|get_en_title }}"
+                                                    ></div>
+                                                    <p
+                                                            class="text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                                    >
+                                                        {{ color }}
+                                                    </p>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                            {% endif %}
+                        {% endif %}
+                        {% if product.is_available %}
+                            <div class="flex h-10 w-24 items-center justify-center gap-x-3 rounded-lg border border-gray-100 px-4 py-1 dark:border-white/5">
+                                <button type="button" id="plus-btn2">
+                                    <svg class="h-5 w-5 text-emerald-500 dark:text-emerald-400">
+                                        <use xlink:href="#plus"/>
+                                    </svg>
+                                </button>
+                                <div id="counter2"
+                                     class="flex h-5 w-5 select-none items-center justify-center text-sm text-zinc-700 dark:text-white">
+                                    1
+                                </div>
+                                <button type="button" id="minus-btn2">
+                                    <svg class="h-5 w-5 text-emerald-500 dark:text-emerald-400">
+                                        <use xlink:href="#minus"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <script>
+                    function mobile_set_color_value(color) {
+                        document.getElementById('colorInp2').value = color
+                        document.getElementById(`color-${color}`).className = ''
+                        document.getElementById(`color-${color}`).className = 'relative block cursor-pointer rounded-full border-2 border-gray-100 p-2 shadow-base hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 '
+                    }
+
+                    function mobile_get_colors(size) {
+                        document.getElementById('sizeInp2').value = size
+                        document.getElementById(`size-${size}`).className += 'hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 '
+                        let fd = new FormData();
+                        fd.append("size", size);
+                        axios.get(`/get-product-colors/{{ product.slug }}`, {
+                            params: {
+                                size: size
+                            }
+                        })
+                            .then(res => {
+                                var div = document.getElementById('mobColors')
+                                div.innerHTML = ''
+                                var index = 0;
+                                var items = res.data.colors;
+                                items.map(function (item) {
+                                    document.getElementById('mobchooseColor').style.display = 'block'
+                                    div.innerHTML +=
+                                        `<div>
+                            <input
+                                    checked
+                                    type="radio"
+                                    name="color"
+                                    value="color-${index}"
+                                    id="color-${index}"
+                                    class="peer hidden"
+                            />
+
+                            <label
+                                    id='color-${item}'
+                                    onclick="mobile_set_color_value('${item}')"
+                                    for="color-${index}"
+                                    class="relative block cursor-pointer rounded-full border-2 border-gray-100 p-2 shadow-base"
+                            >
+                                <div class="flex items-center gap-x-2">
+                                    <div
+                                            class="h-5 w-5 rounded-full border-2 border-gray-200 shadow-base dark:border-white/30"
+                                            style="background-color: ${res.data.en_titles[index]}"
+                                    ></div>
+                                    <p
+                                            class="text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                    >
+                                        ${item}
+                                    </p>
+                                </div>
+                            </label>
+                        </div>`
+                                    index += 1;
+                                });
+                            })
+                            .catch(err => {
+                                console.error('Error:', err);
+                            });
+                    }
+                </script>
+                <script>
+                    const plusBtn2 = document.getElementById('plus-btn2');
+                    const minusBtn2 = document.getElementById('minus-btn2');
+                    const counter2 = document.getElementById('counter2');
+                    let count2 = 1;
+
+                    function updateCounter2() {
+                        counter2.textContent = count2;
+                    }
+
+                    plusBtn2.addEventListener('click', function () {
+                        count2++;
+                        document.getElementById('quantityInp2').value = count2
+                        updateCounter2(); // Update the displayed value
+                    });
+                    minusBtn2.addEventListener('click', function () {
+                        if (count2 > 1) {
+                            count2--; // Decrement the counter value if it's greater than 1
+                            document.getElementById('quantityInp2').value = count2
+                            updateCounter2(); // Update the displayed value
+                        }
+                    });
+
+                </script>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div
+                            class="flex items-center gap-x-2 rounded-lg border border-gray-100 px-4 py-3 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#refund"/>
+                        </svg>
+                        هفت روز ضمانت بازگشت کالا
+                    </div>
+
+                    <div
+                            class="flex items-center gap-x-2 rounded-lg border border-gray-100 px-4 py-3 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#verified"/>
+                        </svg>
+                        تضمین اصالت کالا
+                    </div>
+                    <div
+                            class="flex items-center gap-x-2 rounded-lg border border-gray-100 px-4 py-3 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#support"/>
+                        </svg>
+                        هفت روز هفته
+                    </div>
+                    <div
+                            class="flex items-center gap-x-2 rounded-lg border border-gray-100 px-4 py-3 text-sm text-zinc-500 dark:border-white/5 dark:text-zinc-400"
+                    >
+                        <svg class="h-6 w-6">
+                            <use xlink:href="#fast-delivery"/>
+                        </svg>
+                        تحویل اکسپرس در تهران, کرج
+                    </div>
+                </div>
+            </div>
+            <!-- Property -->
+            <div
+                    class="mb-6 rounded-lg bg-white p-4 shadow-base dark:bg-zinc-900 lg:hidden"
+            >
+                <p class="mb-6 text-zinc-700 dark:text-white">ویژگی های محصول</p>
+
+                <ul class="space-y-4">
+                    {% for property in product.property.all %}
+                        <li class="flex gap-x-2">
+                        <div
+                                class="min-w-fit text-sm text-zinc-500 dark:text-zinc-400"
+                        >
+                            {{ property.value }}
+                        </div>
+                    {% endfor %}
+
+                </ul>
+            </div>
+
+            <!-- Add to Cart -->
+            <div
+                    class="fixed inset-x-0 bottom-0 z-10 bg-white p-5 dark:bg-zinc-900"
+            >
+                <div class="flex items-center justify-between gap-x-6">
+                    <!-- Button -->
+                    {% if product.is_available %}
+                        {% if product.inventory != None or product.attributes.count > 0 %}
+                            <form action="" method="post">
+                                <div class="flex grow">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="color" id="colorInp2">
+                                    <input type="hidden" name="size" id="sizeInp2">
+                                    <input type="hidden" value="1" name="quantity" id="quantityInp2">
+                                    <button class="btn-primary w-full px-4 py-3 text-sm">
+                                        افزودن به سبد خرید
+                                    </button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <button style="background-color: red" class="btn-primary w-full px-4 py-3 text-sm">
+                                ناموجود
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <button style="background-color: red" class="btn-primary w-full px-4 py-3 text-sm">
+                            ناموجود
+                        </button>
+                    {% endif %}
+                    {% if product.is_available %}
+                        <p style="font-size: 10px;color: deepskyblue">هزینه<br> ارسال<br> رایگان</p>
+                        <div class="space-y-1">
+                            {% if product.discounted_price %}
+                                <div class="flex items-center gap-x-2">
+                                    <div>
+                                        <del
+                                                class="text-sm text-zinc-500 decoration-red-600 dark:text-zinc-400 dark:decoration-red-500 md:text-base"
+                                        >
+                                            {{ product.price|intcomma:False }}
+                                        </del>
+                                    </div>
+                                    <div
+                                            class="flex w-10 items-center justify-center rounded-full bg-red-500 py-0.5 text-sm font-bold text-white dark:bg-red-600"
+                                    >
+                                        {{ product.discounted_percentage|default:'' }}%
+                                    </div>
+                                </div>
+                                <div class="text-emerald-500 dark:text-emerald-400">
+                                    <span class="font-semibold">{{ product.discounted_price|default:''|intcomma:False }}</span>
+                                    <span class="text-sm font-light">تومان</span>
+                                </div>
+                            {% else %}
+                                <div class="text-emerald-500 dark:text-emerald-400">
+                                    <span class="font-semibold">{{ product.price|default:''|intcomma:False }}</span>
+                                    <span class="text-sm font-light">تومان</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="mb-6">
+            <div>
+                <!-- Section Header -->
+                <div class="mb-4 flex items-center justify-between">
+                    <h3
+                            class="font-medium text-zinc-700 dark:text-white md:text-lg lg:text-xl"
+                    >
+                        کالاهای مرتبط
+                    </h3>
+                </div>
+                <!-- Section Content -->
+                <div class="swiper product-slider p-px">
+                    <div class="swiper-wrapper">
+                        {% for products in same_products %}
+                            <div class="swiper-slide">
+                                <!-- Product Card -->
+                                <div
+                                        class="border-gradient group relative rounded-base p-px before:absolute before:-inset-px before:h-[calc(100%+2px)] before:w-[calc(100%+2px)] before:rounded-base"
+                                >
+                                    <div
+                                            class="relative rounded-xl bg-white p-2 shadow-base dark:bg-zinc-900 md:p-5"
+                                    >
+                                        <!-- image -->
+                                        <div class="mb-2 md:mb-5" draggable="false">
+                                            {% if product.poster %}
+                                                <a href="{% url 'product_detail' products.slug %}">
+                                                    <img
+                                                            alt=""
+                                                            class="mx-auto w-32 rounded-lg md:w-auto"
+                                                            src="{{ products.poster.url }}"
+                                                    />
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        <!-- title -->
+                                        <div class="mb-2">
+                                            <a
+                                                    class="line-clamp-2 h-10 text-sm text-zinc-700 dark:text-white md:h-12 md:text-base"
+                                                    href="{% url 'product_detail' products.slug %}"
+                                            >
+                                                {{ products.title }}
+                                            </a>
+                                        </div>
+                                        <!-- Prices -->
+                                        <div class="flex flex-col">
+                                            <!-- Old price -->
+                                            {% if products.is_available %}
+                                                {% if products.discounted_price %}
+                                                    <div class="h-5 text-left">
+                                                        <del
+                                                                class="text-sm text-zinc-500 decoration-red-600 dark:text-zinc-400 dark:decoration-red-500 md:text-base"
+                                                        >
+                                                            {{ products.price|intcomma:False }}
+                                                        </del>
+                                                    </div>
+                                                    <div class="flex items-center justify-between">
+                                                        <div>
+                                                            <p
+                                                                    class="w-9 rounded-full bg-red-500 py-px text-center text-sm text-white dark:bg-red-500"
+                                                            >
+                                                                {{ products.discounted_percentage|default:'' }}%
+                                                            </p>
+                                                        </div>
+                                                        <!-- New price -->
+                                                        <div
+                                                                class="text-sm font-bold text-emerald-500 dark:text-emerald-400 md:text-base"
+                                                        >
+                                                            {{ products.discounted_price|default:''|intcomma:False }}
+                                                            <span class="text-xs font-light md:text-sm"
+                                                            >تومان</span
+                                                            >
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <div
+                                                            class="text-sm font-bold text-emerald-500 dark:text-emerald-400 md:text-base"
+                                                    >
+                                                        {{ products.price|default:''|intcomma:False }}
+                                                        <span class="text-xs font-light md:text-sm"
+                                                        >تومان</span
+                                                        >
+                                                    </div>
+                                                {% endif %}
+                                            {% else %}
+                                                <div style="color: red"
+                                                     class="text-sm font-bold text-emerald-500 dark:text-emerald-400 md:text-base"
+                                                >
+                                                    ناموجود
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+            </div>
+        </div>
+        <!-- description / specs / commment  -->
+        <div class="rounded-lg bg-white p-4 shadow-base dark:bg-zinc-900">
+            <div class="mb-6">
+                <ul
+                        class="-mb-px flex justify-between gap-x-2 text-center text-sm font-medium xs:justify-start xs:gap-x-4 xs:text-base"
+                        id="productDCSTab"
+                        data-tabs-toggle="#productDCSTab"
+                        role="tablist"
+                >
+                    <li role="presentation">
+                        <button
+                                class="inline-block rounded-t-lg border-b-2 border-transparent px-2 pb-2 text-zinc-700 hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+                                id="description-tab"
+                                data-tabs-target="#description"
+                                type="button"
+                                role="tab"
+                                aria-controls="description"
+                                aria-selected="false"
+                        >
+                            معرفی
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button
+                                class="inline-block rounded-t-lg border-b-2 border-transparent px-2 pb-2 text-zinc-700 hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+                                id="specs-tab"
+                                data-tabs-target="#specs"
+                                type="button"
+                                role="tab"
+                                aria-controls="specs"
+                                aria-selected="false"
+                        >
+                            مشخصات
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button
+                                class="relative inline-block rounded-t-lg border-b-2 border-transparent px-2 pb-2 text-zinc-700 hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+                                id="comments-tab"
+                                data-tabs-target="#comments"
+                                type="button"
+                                role="tab"
+                                aria-controls="comments"
+                                aria-selected="false"
+                        >
+                            دیدگاه ها
+                            <span
+                                    class="absolute -left-5 -top-4 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-xs text-white dark:bg-emerald-600 dark:text-white xs:text-sm"
+                            >
+                      {{ product.productcomment_set|get_public_comments_count }}
+                    </span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div id="productDCSTab">
+                <div
+                        class="hidden"
+                        id="description"
+                        role="tabpanel"
+                        aria-labelledby="description-tab"
+                >
+                    <div
+                            class="text-sm leading-loose text-zinc-600 dark:text-zinc-300 lg:text-base"
+                    >
+                        {{ product.description|safe }}
+                    </div>
+                </div>
+                <div
+                        class="hidden"
+                        id="specs"
+                        role="tabpanel"
+                        aria-labelledby="specs-tab"
+                >
+                    <ul class="space-y-6 text-sm">
+                        {% for item in product.specifications.items %}
+                            <li class="grid grid-cols-3 gap-x-2 lg:grid-cols-5">
+                                <div class="col-span-1 text-zinc-500 dark:text-zinc-400">
+                                    {{ item.0 }}
+                                </div>
+                                <div
+                                        class="col-span-2 border-gray-100 pb-4 text-zinc-600 dark:border-white/5 dark:text-zinc-300 lg:col-span-4"
+                                >
+                                    <ul class="space-y-4">
+                                        <li>{{ item.1 }}</li>
+                                    </ul>
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+                <div
+                        class="hidden"
+                        id="comments"
+                        role="tabpanel"
+                        aria-labelledby="comments-tab"
+                >
+                    <form action="{% url 'product_add_comment' product.slug %}" method="post">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-12 gap-y-8 md:gap-8">
+                            <!-- Submit New Comment -->
+                            {% if request.user.is_authenticated %}
+                                {% if product|check_user_buy_product:request.user %}
+                                    <div class="col-span-12 md:col-span-4 lg:col-span-3">
+                                        <div class="grid grid-cols-2 gap-4 md:sticky md:top-32">
+                                            <div class="text-lg text-zinc-700 dark:text-white">
+                                                ثبت دیدگاه
+                                            </div>
+                                            <div class="col-span-2">
+                                                <label
+                                                        for="title"
+                                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                                >
+                                                    <input
+                                                            name="title"
+                                                            type="text"
+                                                            id="title"
+                                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                                            placeholder="عنوان دیدگاه"
+                                                    />
+
+                                                    <span
+                                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                                    >
+                            عنوان دیدگاه
+                          </span>
+                                                </label>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <!-- Suggestion -->
+                                                <div
+                                                        class="mb-4 text-sm text-zinc-500 dark:text-zinc-400"
+                                                >
+                                                    این محصول را به دیگران پیشنهاد
+                                                </div>
+                                                <fieldset class="flex items-center gap-4">
+                                                    <legend class="sr-only">Suggestion</legend>
+
+                                                    <div class="w-full">
+                                                        <input
+                                                                type="radio"
+                                                                name="suggest"
+                                                                value="پیشنهاد میکنم"
+                                                                id="suggest-like"
+                                                                class="peer hidden"
+                                                        />
+
+                                                        <label
+                                                                for="suggest-like"
+                                                                class="relative block cursor-pointer rounded-lg border border-gray-100 p-2 shadow-base hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 peer-checked:dark:border-emerald-400"
+                                                        >
+                                                            <div
+                                                                    class="flex items-center gap-x-2 text-emerald-500 dark:text-emerald-400"
+                                                            >
+                                                                <svg class="h-5 w-5">
+                                                                    <use xlink:href="#like"/>
+                                                                </svg>
+                                                                <p class="text-sm xs:text-base">میکنم</p>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="w-full">
+                                                        <input
+                                                                type="radio"
+                                                                name="suggest"
+                                                                value="پیشنهاد نمیکنم"
+                                                                id="suggest-dislike"
+                                                                class="peer hidden"
+                                                        />
+
+                                                        <label
+                                                                for="suggest-dislike"
+                                                                class="relative block cursor-pointer rounded-lg border border-gray-100 p-2 shadow-base hover:border-gray-200 peer-checked:border-red-500 dark:border-white/5 dark:hover:border-white/10 peer-checked:dark:border-red-400"
+                                                        >
+                                                            <div
+                                                                    class="flex items-center gap-x-2 text-red-500 dark:text-red-400"
+                                                            >
+                                                                <svg class="h-5 w-5">
+                                                                    <use xlink:href="#dislike"/>
+                                                                </svg>
+                                                                <p class="text-sm xs:text-base">نمیکنم</p>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <label
+                                                        for="comment"
+                                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                                >
+                          <textarea
+                                  name="text"
+                                  type="text"
+                                  id="comment"
+                                  rows="3"
+                                  class="main-scroll peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                  placeholder="متن دیدگاه"
+                          ></textarea>
+
+                                                    <span
+                                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                                    >
+                            متن دیدگاه
+                          </span>
+                                                </label>
+                                            </div>
+                                            <div class="col-span-2 flex justify-end">
+                                                <button class="btn-primary w-full px-4 py-2 md:w-auto">
+                                                    ارسال دیدگاه
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            <!-- Comments -->
+                            <div
+                                    class="order-first col-span-12 md:order-last md:col-span-8 lg:col-span-9"
+                            >
+                                <!-- Desktop Comments -->
+                                <div class="hidden md:block">
+                                    <ul
+                                            class="mb-8 space-y-4 divide-y divide-gray-200 dark:divide-white/10"
+                                    >
+                                        {% for comment in product.productcomment_set.all|get_public_comments:request %}
+                                            <li>
+                                                <div class="py-6">
+                                                    <h5
+                                                            class="mb-4 leading-relaxed text-zinc-700 dark:text-white xl:text-lg"
+                                                    >
+                                                        {{ comment.title }}
+                                                    </h5>
+                                                    <div
+                                                            class="mb-6 flex items-center gap-x-4 border-b border-gray-100 pb-6 dark:border-white/5"
+                                                    >
+                                                        {% if comment.opinion == 'پیشنهاد میکنم' %}
+                                                            <div
+                                                                    class="flex items-center gap-x-2 text-emerald-500 dark:text-emerald-400"
+                                                            >
+                                                                <svg class="h-5 w-5">
+                                                                    <use xlink:href="#like"/>
+                                                                </svg>
+                                                                {{ comment.opinion }}
+                                                            </div>
+                                                        {% else %}
+                                                            <div
+                                                                    class="flex items-center gap-x-2 text-red-500 dark:text-red-400"
+                                                            >
+                                                                <svg class="h-5 w-5">
+                                                                    <use xlink:href="#dislike"/>
+                                                                </svg>
+                                                                پیشنهاد نمیکنم
+                                                            </div>
+                                                        {% endif %}
+
+                                                        <div class="flex items-center gap-x-2">
+                                                            <div
+                                                                    class="text-sm text-zinc-500 dark:text-zinc-400"
+                                                            >
+                                                                {{ comment.get_created_at }}
+                                                            </div>
+                                                            <span
+                                                                    class="h-3 w-px rounded-full bg-gray-200 dark:bg-white/10"
+                                                            ></span>
+                                                            <div
+                                                                    class="text-sm text-zinc-500 dark:text-zinc-400"
+                                                            >
+                                                                خریدار
+                                                            </div>
+                                                            {% if request.user.is_admin or request.user == comment.user %}
+                                                                <a href="{% url 'product_remove_comment' comment.id %}"
+                                                                   class="btn-red-nobg px-3 py-2 text-sm">
+                                                                    <span>
+                                                                      <svg class="h-6 w-6">
+                                                                        <use xlink:href="#trash"></use>
+                                                                      </svg>
+                                                                    </span>
+                                                                    <span>حذف دیدگاه</span>
+                                                                </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                            class="mb-6 border-b border-gray-100 pb-6 dark:border-white/5"
+                                                    >
+                                                        <p
+                                                                class="line-clamp-4 text-sm text-zinc-600 dark:text-zinc-300"
+                                                        >
+                                                            {{ comment.text }}
+                                                        </p>
+                                                    </div>
+                                                    {% if request.user.is_authenticated %}
+                                                        <div class="flex items-center justify-end gap-x-8">
+                                                            <div
+                                                                    class="text-sm text-zinc-500 dark:text-zinc-400"
+                                                            >
+                                                                آیا این دیدگاه برایتان مفید بود؟
+                                                            </div>
+                                                            <button
+                                                                    type="button"
+                                                                    onclick="like_comment({{ comment.id }})"
+                                                                    class="flex items-center gap-x-2 text-emerald-500 transition-all duration-200 hover:text-emerald-400 dark:text-emerald-400 hover:dark:text-emerald-500"
+                                                            >
+                                                                <span id="desktop-comment-like-count-{{ comment.id }}"
+                                                                      class="text-sm"> {{ comment.likes.count }} </span>
+                                                                <svg class="h-6 w-6">
+                                                                    <use xlink:href="#like"/>
+                                                                </svg>
+                                                            </button>
+                                                            <button onclick="dislike_comment({{ comment.id }})"
+                                                                    type="button"
+                                                                    class="flex items-center gap-x-2 text-red-500 transition-all duration-200 hover:text-red-400 dark:text-red-400 hover:dark:text-red-500"
+                                                            >
+                                                                <span id="desktop-comment-dislike-count-{{ comment.id }}"
+                                                                      class="text-sm"> {{ comment.dislikes.count }} </span>
+                                                                <svg class="h-6 w-6">
+                                                                    <use xlink:href="#dislike"/>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+
+                                    </ul>
+                                    <!-- Pagination -->
+                                    {% with product.productcomment_set.all|get_public_comments:request as comments %}
+                                        {% if comments.has_other_pages %}
+                                            <div
+                                                    class="flex items-center justify-center gap-x-4 md:justify-end"
+                                            >
+                                                <!-- Previous page-->
+                                                {% if comments.has_previous %}
+                                                    <a
+                                                            class="pagination-button flex items-center justify-center"
+                                                            href="?page={{ comments.previous_page_number }}"
+                                                    >
+                                                        <svg class="h-6 w-6">
+                                                            <use xlink:href="#chevron-right"></use>
+                                                        </svg>
+                                                    </a>
+                                                {% endif %}
+
+                                                <!-- Pages -->
+                                                <div class="flex items-center gap-x-2">
+                                                    {% for number in comments.paginator.page_range %}
+                                                        {% if number >= comments.number|add:"-3" and number <= comments.number|add:"3" %}
+                                                            <a
+                                                                    class="pagination-button pagination-button-{% if comments.number == number %}active{% endif %}"
+                                                                    href="?page={{ number }}"
+                                                            >
+                                                                {{ number }}
+                                                            </a>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </div>
+                                                <!-- Next page-->
+                                                {% if comments.has_next %}
+                                                    <a
+                                                            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-700 transition-all duration-200 hover:bg-emerald-500 hover:text-white dark:bg-zinc-900 dark:text-white hover:dark:bg-emerald-600"
+                                                            href="?page={{ comments.next_page_number }}"
+                                                    >
+                                                        <svg class="h-6 w-6">
+                                                            <use xlink:href="#chevron-left"></use>
+                                                        </svg>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <!-- Mobile Comments -->
+                                <div class="md:hidden">
+                                    <div class="swiper product-comments-swiper">
+                                        {% with product.productcomment_set.all|get_public_comments:request as comments %}
+                                            {% if comments.has_other_pages %}
+                                                <div
+                                                        class="flex items-center justify-center gap-x-4 md:justify-end"
+                                                >
+                                                    <!-- Previous page-->
+                                                    {% if comments.has_previous %}
+                                                        <a
+                                                                class="pagination-button flex items-center justify-center"
+                                                                href="?page={{ comments.previous_page_number }}"
+                                                        >
+                                                            <svg class="h-6 w-6">
+                                                                <use xlink:href="#chevron-right"></use>
+                                                            </svg>
+                                                        </a>
+                                                    {% endif %}
+
+                                                    <!-- Pages -->
+                                                    <div class="flex items-center gap-x-2">
+                                                        {% for number in comments.paginator.page_range %}
+                                                            {% if number >= comments.number|add:"-3" and number <= comments.number|add:"3" %}
+                                                                <a
+                                                                        class="pagination-button pagination-button-{% if comments.number == number %}active{% endif %}"
+                                                                        href="?page={{ number }}"
+                                                                >
+                                                                    {{ number }}
+                                                                </a>
+                                                            {% endif %}
+                                                        {% endfor %}
+
+                                                    </div>
+                                                    <!-- Next page-->
+                                                    {% if comments.has_next %}
+                                                        <a
+                                                                class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-700 transition-all duration-200 hover:bg-emerald-500 hover:text-white dark:bg-zinc-900 dark:text-white hover:dark:bg-emerald-600"
+                                                                href="?page={{ comments.next_page_number }}"
+                                                        >
+                                                            <svg class="h-6 w-6">
+                                                                <use xlink:href="#chevron-left"></use>
+                                                            </svg>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
+                                                <br>
+                                            {% endif %}
+                                        {% endwith %}
+                                        <div class="swiper-wrapper">
+                                            {% for comment in product.productcomment_set.all|get_public_comments:request %}
+                                                <div class="swiper-slide">
+                                                    <div
+                                                            class="flex h-64 flex-col rounded-lg border border-gray-100 px-4 py-6 dark:border-white/5"
+                                                    >
+                                                        <!-- head -->
+                                                        {% if comment.opinion == 'پیشنهاد میکنم' %}
+                                                            <div
+                                                                    class="mb-4 flex items-center gap-x-2 text-emerald-500 dark:text-emerald-400"
+                                                            >
+                                                                <svg class="h-5 w-5">
+                                                                    <use xlink:href="#like"/>
+                                                                </svg>
+                                                                {{ comment.opinion }}
+                                                            </div>
+                                                        {% else %}
+                                                            <div
+                                                                    class="mb-4 flex items-center gap-x-2 text-red-500 dark:text-red-400"
+                                                            >
+                                                                <svg class="h-5 w-5">
+                                                                    <use xlink:href="#dislike"/>
+                                                                </svg>
+                                                                پیشنهاد نمیکنم
+                                                            </div>
+
+                                                        {% endif %}
+                                                        <!-- Comment -->
+                                                        <div class="flex-grow space-y-2">
+                                                            <h5
+                                                                    class="text-sm leading-relaxed text-zinc-700 dark:text-white"
+                                                            >
+                                                                {{ comment.title }}
+                                                            </h5>
+                                                            <p
+                                                                    class="line-clamp-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300"
+                                                            >
+                                                                {{ comment.text }}
+                                                            </p>
+                                                        </div>
+
+                                                        <!-- Footer -->
+                                                        {% if request.user.is_authenticated %}
+                                                            <div class="flex items-center justify-end gap-x-8">
+                                                                <div
+                                                                        class="text-sm text-zinc-500 dark:text-zinc-400"
+                                                                >
+                                                                    آیا این دیدگاه برایتان مفید بود؟
+                                                                </div>
+                                                                <button
+                                                                        type="button"
+                                                                        onclick="like_comment({{ comment.id }})"
+                                                                        class="flex items-center gap-x-2 text-emerald-500 transition-all duration-200 hover:text-emerald-400 dark:text-emerald-400 hover:dark:text-emerald-500"
+                                                                >
+                                                                <span id="mob-comment-like-count-{{ comment.id }}"
+                                                                      class="text-sm"> {{ comment.likes.count }} </span>
+                                                                    <svg class="h-6 w-6">
+                                                                        <use xlink:href="#like"/>
+                                                                    </svg>
+                                                                </button>
+                                                                <button onclick="dislike_comment({{ comment.id }})"
+                                                                        type="button"
+                                                                        class="flex items-center gap-x-2 text-red-500 transition-all duration-200 hover:text-red-400 dark:text-red-400 hover:dark:text-red-500"
+                                                                >
+                                                                <span id="mob-comment-dislike-count-{{ comment.id }}"
+                                                                      class="text-sm"> {{ comment.dislikes.count }} </span>
+                                                                    <svg class="h-6 w-6">
+                                                                        <use xlink:href="#dislike"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Product Gallery modal -->
+<div
+        id="product-gallery-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-7xl">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3
+                            class="line-clamp-1 text-zinc-700 dark:text-white md:text-lg"
+                    >
+                        تصاویر {{ product.title }}
+                    </h3>
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="product-gallery-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"/>
+                        </svg>
+
+                        <span class="sr-only">Close menu</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="flex flex-col gap-4">
+                    <div class="border-b border-gray-100 p-6 dark:border-white/5">
+                        <div class="swiper product-image-desktop-swiper">
+                            <div class="swiper-wrapper">
+                                {% for image in product.image.all %}
+                                    <div class="swiper-slide">
+                                        <img
+                                                src="{{ image.image.url }}"
+                                                alt=""
+                                                class="mx-auto min-h-[500px] min-w-[500px]"
+                                                loading="lazy"
+                                        />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="swiper-pagination"></div>
+                            <div class="swiper-button-next hidden md:flex"></div>
+                            <div class="swiper-button-prev hidden md:flex"></div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="swiper product-image-desktop-2-swiper">
+                            <div class="swiper-wrapper justify-center">
+                                {% for image in product.image.all %}
+                                    <div
+                                            class="swiper-slide rounded-lg border border-gray-100 dark:border-white/5"
+                                    >
+                                        <img
+                                                src="{{ image.image.url }}"
+                                                alt=""
+                                                class="mx-auto h-25 w-25"
+                                                loading="lazy"
+                                        />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="swiper-button-next hidden md:flex"></div>
+                            <div class="swiper-button-prev hidden md:flex"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'includes/footer.html' %}
+</div>
+{% include 'includes/messages.html' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"
+        integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const copyToClipboardSocialShareDesktop = (button) => {
+        const linkToCopy = button.getAttribute("data-link");
+        if (linkToCopy) {
+            navigator.clipboard
+                .writeText(linkToCopy)
+                .then(function () {
+                    const copyToClipboardSocialShareText = document.getElementById(
+                        "copyToClipboardSocialShareText",
+                    );
+                    copyToClipboardSocialShareText.innerText = "کپی شد !";
+
+                    // Revert the text after 5 seconds
+                    setTimeout(function () {
+                        copyToClipboardSocialShareText.innerText = "کپی کردن لینک";
+                    }, 5000);
+                })
+                .catch(function (err) {
+                    console.error("مشکلی در عملیات پیش آمد", err);
+                });
+        }
+    };
+    const copyToClipboardSocialShareMobile = (button) => {
+        const linkToCopy = button.getAttribute("data-link");
+        console.log(linkToCopy);
+        if (linkToCopy) {
+            navigator.clipboard
+                .writeText(linkToCopy)
+                .then(function () {
+                    const copyToClipboardSocialShareNotifyMobile =
+                        document.getElementById(
+                            "notify-copied-social-share-link-mobile",
+                        );
+                    copyToClipboardSocialShareNotifyMobile.classList.remove("hidden");
+
+                    // Revert the text after 5 seconds
+                    setTimeout(function () {
+                        copyToClipboardSocialShareNotifyMobile.classList.add("hidden");
+                    }, 5000);
+                })
+                .catch(function (err) {
+                    console.error("مشکلی در عملیات پیش آمد", err);
+                });
+        }
+    };
+</script>
+<script>
+    function mob_fav() {
+        var but = document.getElementById('mobFav')
+        axios.get(`/add-remove-favorite/{{ product.slug }}`)
+            .then(res => {
+                if (res.data.message === 'add') {
+                    but.innerHTML = ''
+                    but.innerHTML =
+                        `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                             fill="currentColor" class="bi bi-suit-heart-fill"
+                                             viewBox="0 0 16 16">
+                                            <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1z"/>
+                                        </svg>`
+                } else {
+                    but.innerHTML = ''
+                    but.innerHTML =
+                        `<svg class="h-6 w-6">
+                                            <use xlink:href="#heart"/>
+                                        </svg>`
+                }
+
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+    }
+
+    function desktop_fav() {
+        var but = document.getElementById('deskFav')
+        axios.get(`/add-remove-favorite/{{ product.slug }}`)
+            .then(res => {
+                if (res.data.message === 'add') {
+                    but.innerHTML = ''
+                    but.innerHTML =
+                        `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                             fill="currentColor" class="bi bi-suit-heart-fill"
+                                             viewBox="0 0 16 16">
+                                            <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1z"/>
+                                        </svg>`
+                } else {
+                    but.innerHTML = ''
+                    but.innerHTML =
+                        `<svg class="h-6 w-6">
+                                            <use xlink:href="#heart"/>
+                                        </svg>`
+                }
+
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+    }
+</script>
+<script>
+    function like_comment(id) {
+        var dislike_span = document.getElementById(`desktop-comment-dislike-count-${id}`)
+        var like_span = document.getElementById(`desktop-comment-like-count-${id}`)
+        var mob_dislike_span = document.getElementById(`mob-comment-dislike-count-${id}`)
+        var mob_like_span = document.getElementById(`mob-comment-like-count-${id}`)
+
+        axios.post(`/comment-like/${id}`, {}, {
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(res => {
+                like_span.innerText = res.data.like_count
+                dislike_span.innerText = res.data.dislike_count
+                mob_like_span.innerText = res.data.like_count
+                mob_dislike_span.innerText = res.data.dislike_count
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+    }
+
+    function dislike_comment(id) {
+        var dislike_span = document.getElementById(`desktop-comment-dislike-count-${id}`)
+        var like_span = document.getElementById(`desktop-comment-like-count-${id}`)
+        var mob_dislike_span = document.getElementById(`mob-comment-dislike-count-${id}`)
+        var mob_like_span = document.getElementById(`mob-comment-like-count-${id}`)
+        axios.post(`/comment-dislike/${id}`, {}, {
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(res => {
+                like_span.innerText = res.data.like_count
+                dislike_span.innerText = res.data.dislike_count
+                mob_like_span.innerText = res.data.like_count
+                mob_dislike_span.innerText = res.data.dislike_count
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+    }
+</script>
+</body>
+</html>

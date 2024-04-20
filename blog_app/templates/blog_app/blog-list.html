@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'blog_app' %}/css/bootstrap.rtl.css">
+    <link rel="stylesheet" href="{% static 'blog_app' %}/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'blog_app' %}/css/style.css">
+    <title>لیست مقالات</title>
+</head>
+<body>
+
+{% include 'blog_includes/nav.html' %}
+<br><br>
+<main><!-- start main -->
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-lg-3">
+
+                <div class="custom-sidebar"><!-- start filter box 1 -->
+                    <p class="font-12 border-bottom pb-2">دسته بندی ها</p>
+                    <div class="mt-3 px-2">
+                        <div class="form-check mb-3">
+                            {% for category in nav_categories %}
+                                <li><a href="{% url 'category_detail' category.slug %}">{{ category.title }}</a></li>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+{#                <div class="custom-sidebar"><!-- start filter box 1 -->#}
+{#                    <p class="font-12 border-bottom pb-2">مرتب سازی</p>#}
+{#                    <div class="mt-3 px-2">#}
+{#                        <div class="form-check mb-3">#}
+{#                            <select style="width: 100%" name="" id="">#}
+{#                                <option selected value="">جدیدترین ها</option>#}
+{#                                <option value="-visit_count">پربازید ترین ها</option>#}
+{#                                <option value="mounth">پربازدید ترین های ماه</option>#}
+{#                            </select>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+
+            </div>
+
+
+            <div class="col-lg-9">
+
+                <div class="row"><!-- start title -->
+                    <div class="col-12 d-flex align-items-center">
+                        <h1 class="blog-title-text">مقالات</h1>
+                        <div class="blog-title-line"></div>
+                    </div>
+                </div><!-- end title -->
+
+                <div class="row mt-3"><!-- start blog posts -->
+
+                    {% if articles %}
+                        {% for article in articles %}
+                            <div class="col-lg-4 col-sm-6 mb-3"><!-- start item -->
+                                <div class="card border-0 custom-blog-card">
+                                    <div class="sub-layer">
+                                        <img src="{{ article.poster.url }}" class="img-fluid">
+                                        <div class="over-layer">
+                                            <a href="{% url 'category_detail' article.categories.first.slug %}"
+                                               class="image-badge">{{ article.categories.first.title }}</a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body pb-0">
+                                        <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                                        <p>
+                                            {{ article.short_description }}
+                                        </p>
+                                    </div>
+                                    <div class="card-footer bg-white border-top-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor"
+                                             class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                        </svg>
+                                        <span class="writer">{{ article.visit_count }}</span>
+                                        <div class="float-end mt-2">
+                                        <span class="time"><i
+                                                class="fa fa-clock font-13 me-1"></i>{{ article.get_created_at }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- end item -->
+                        {% endfor %}
+                        {% if articles.has_other_pages %}
+                            <ul class="custom-pagination mt-4">
+                                {% if articles.has_previous %}
+                                    <li><a href="?page=1&q={{ request.GET.q }}"><i
+                                            class="fa fa-angle-double-right align-middle"></i></a></li>
+                                    <li><a href="?page={{ articles.previous_page_number }}&q={{ request.GET.q }}"><i
+                                            class="fa fa-angle-right align-middle"></i></a></li>
+                                {% endif %}
+
+                                {% for number in articles.paginator.page_range %}
+                                    {% if articles.number == number %}
+                                        <li class="active"><span>{{ number }}</span></li>
+                                    {% elif number >= articles.number|add:"-3" and number <= articles.number|add:"2" %}
+                                        <li><a href="?page={{ number }}&q={{ request.GET.q }}">{{ number }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if articles.has_next %}
+                                    <li><a href="?page={{ articles.next_page_number }}&q={{ request.GET.q }}"><i
+                                            class="fa fa-angle-left align-middle"></i></a></li>
+                                    <li><a href="?page={{ articles.paginator.num_pages }}&q={{ request.GET.q }}"><i
+                                            class="fa fa-angle-double-left align-middle"></i></a></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'article_list' %}" class="btn btn-warning">مقاله ای یافت نشد</a>
+                    {% endif %}
+
+                </div><!-- end blog posts -->
+
+            </div>
+
+
+        </div>
+
+    </div>
+</main><!-- end main -->
+
+{% include 'blog_includes/footer.html' %}
+
+<script src="{% static 'blog_app' %}/js/jquery.min.js"></script>
+<script src="{% static 'blog_app' %}/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'blog_app' %}/js/blog-js.js"></script>
+</body>
+</html>

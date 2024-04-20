@@ -1,0 +1,498 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="fa" class="light-style layout-navbar-fixed layout-menu-fixed" dir="rtl" data-theme="theme-default"
+      data-assets-path="{% static 'dashboard_app' %}/" data-template="vertical-menu-template">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>داشبورد - تجزیه و تحلیل | فرست - قالب مدیریت بوت‌استرپ</title>
+
+    <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'dashboard_app' %}/img/favicon/favicon.ico">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/boxicons.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/fontawesome.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/flag-icons.css">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/core.css"
+          class="template-customizer-core-css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/theme-default.css"
+          class="template-customizer-theme-css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/css/demo.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/rtl.css">
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/typeahead-js/typeahead.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/apex-charts/apex-charts.css">
+
+    <!-- Page CSS -->
+
+    <!-- Helpers -->
+    <script src="{% static 'dashboard_app' %}/vendor/js/helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="{% static 'dashboard_app' %}/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static 'dashboard_app' %}/js/config.js"></script>
+</head>
+
+<body>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu -->
+        {% include 'dashboard/sidebar.html' %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+            <!-- Navbar -->
+            {% include 'dashboard/menu.html' %}
+            <!-- / Navbar -->
+            <!-- Content wrapper -->
+            <div class="content-wrapper">
+                <!-- Content -->
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <div class="row">
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-success"><i
+                                                class="bx bx-shopping-bag fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">کل سفارشات</span>
+                                    <h2 class="mb-n3">{{ orders.count|intcomma:False }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-info"><i
+                                                class="bx bx-cart fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">سفارشات امروز</span>
+                                    <h2 class="mb-n3">{{ today_orders_count.count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-success"><i
+                                                class="bx bx-money-withdraw fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">کل فروش</span>
+                                    <h4 class="mb-n3">{{ total_sell.total_price__sum|intcomma:False }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-info"><i
+                                                class="bx bx-money fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">فروش امروز</span>
+                                    <h4 class="mb-n3">{{ today_total_sell.total_price__sum|default:0|intcomma:False }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-primary"><i
+                                                class="bx bxs-happy-heart-eyes fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">کل بازدید</span>
+                                    <h2 class="mb-n3">{{ total_visit.count|intcomma:False }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-success"><i
+                                                class="bx bxs-happy-heart-eyes fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">بازدید امروز</span>
+                                    <h2 class="mb-n3">{{ today_total_visit.count|intcomma:False }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-danger"><i
+                                                class="bx bxs-send fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">تعداد مرجوعی</span>
+                                    <h2 class="mb-n3">{{ referral.count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="avatar mx-auto mb-2">
+                                        <span class="avatar-initial rounded-circle bg-label-secondary"><i
+                                                class="bx bxs-user fs-4"></i></span>
+                                    </div>
+                                    <span class="d-block text-nowrap pt-1">تعداد کل کاربران</span>
+                                    <h2 class="mb-n3">{{ users.count|intcomma:False }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Website Analytics-->
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <div>
+                            <canvas id="yearVisitChart"></canvas>
+                        </div>
+                        <div class="col-xl-6 col-12">
+                            <br><br><br>
+                            <div class="card">
+                                <div class="card-header header-elements">
+                                    <h5 class="card-title mb-0">تعداد سفارشات {{ year }}</h5>
+                                    <div class="card-action-element ms-auto py-0"></div>
+                                </div>
+                                <div align="center" class="card-body">
+                                    <canvas id="barChart" class="chartjs" data-height="400"
+                                            style="width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-12">
+                            <br><br><br>
+                            <div class="card">
+                                <div class="card-header header-elements">
+                                    <h5 class="card-title mb-0">فروش {{ year }}</h5>
+                                    <div class="card-action-element ms-auto py-0"></div>
+                                </div>
+                                <div align="center" class="card-body">
+                                    <canvas id="barChart2" class="chartjs" data-height="400"
+                                            style="width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            function get_month(value) {
+                                if (value === '1') {
+                                    return 'فروردین'
+                                }
+                                if (value === '2') {
+                                    return 'اردیبهشت'
+                                }
+                                if (value === '3') {
+                                    return 'خرداد'
+                                }
+                                if (value === '4') {
+                                    return 'تیر'
+                                }
+                                if (value === '5') {
+                                    return 'مرداد'
+                                }
+                                if (value === '6') {
+                                    return 'شهریور'
+                                }
+                                if (value === '7') {
+                                    return 'مهر'
+                                }
+                                if (value === '8') {
+                                    return 'آبان'
+                                }
+                                if (value === '9') {
+                                    return 'آذر'
+                                }
+                                if (value === '10') {
+                                    return 'دی'
+                                }
+                                if (value === '11') {
+                                    return 'بهمن'
+                                }
+                                if (value === '12') {
+                                    return 'اسفند'
+                                }
+                            }
+
+                            const ctx = document.getElementById('yearVisitChart');
+
+                            const site_visits_data =
+                            {{ visit_count|safe }}
+                            const order_data_data =
+                            {{ order_data_list|safe }}
+                            const sell_data_data = {{ sell_data_list|safe }}
+
+                                new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: site_visits_data.map(entry => get_month(entry.month.toString())),
+                                        datasets: [
+                                            {
+                                                label: 'آمار بازدید سایت',
+                                                data: site_visits_data.map(entry => entry.visit_count),
+                                                backgroundColor: [
+                                                    'rgba(255, 99, 132, 1)',
+                                                    'rgba(255, 159, 64, 1)',
+                                                    'rgba(255, 205, 86, 1)',
+                                                    'rgba(75, 192, 192, 1)',
+                                                    'rgba(54, 162, 235, 1)',
+                                                    'rgba(153, 102, 255, 1)',
+                                                    'rgba(201,203,207,1)',
+                                                    'rgba(95,80,197,1)',
+                                                    'rgba(137,57,93,1)',
+                                                    'rgba(0,212,255,1)',
+                                                    'rgba(18,205,75,1)',
+                                                    'rgba(183,127,31,1)',
+                                                ],
+                                                borderColor: [
+                                                    'rgb(255, 99, 132)',
+                                                    'rgb(255, 159, 64)',
+                                                    'rgb(255, 205, 86)',
+                                                    'rgb(75, 192, 192)',
+                                                    'rgb(54, 162, 235)',
+                                                    'rgb(153, 102, 255)',
+                                                    'rgb(201, 203, 207)'
+                                                ],
+                                                borderWidth: 2
+                                            }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+
+
+                        </script>
+                    </div>
+                </div>
+                <!-- / Content -->
+
+                <script>
+                    var order_data =
+                    {{ order_data_list|safe }}
+                    var sell_data = {{ sell_data_list|safe }}
+                        Chart.defaults.font.family = '"primary-font", "segoe ui", "tahoma"';
+
+                    // Color Variables
+                    const purpleColor = '#836AF9',
+                        yellowColor = '#ffe800',
+                        cyanColor = '#28dac6',
+                        orangeColor = '#FF8132',
+                        orangeLightColor = '#FDAC34',
+                        oceanBlueColor = '#299AFF',
+                        greyColor = '#4F5D70',
+                        greyLightColor = '#EDF1F4',
+                        blueColor = '#2B9AFF',
+                        blueLightColor = '#84D0FF';
+
+                    let cardColor, headingColor, labelColor, borderColor, legendColor;
+
+
+                    // Set height according to their data-height
+                    // --------------------------------------------------------------------
+                    const chartList = document.querySelectorAll('.chartjs');
+                    chartList.forEach(function (chartListItem) {
+                        chartListItem.height = chartListItem.dataset.height;
+                    });
+
+                    // Bar Chart
+                    // --------------------------------------------------------------------
+                    const barChart = document.getElementById('barChart');
+                    if (barChart) {
+                        const barChartVar = new Chart(barChart, {
+                            type: 'bar',
+                            data: {
+                                labels: order_data.map(entry => get_month(entry.month.toString())),
+                                datasets: [
+                                    {
+                                        data: order_data.map(entry => entry.order_count),
+                                        backgroundColor: cyanColor,
+                                        borderColor: 'transparent',
+                                        maxBarThickness: 15,
+                                        borderRadius: {
+                                            topRight: 15,
+                                            topLeft: 15
+                                        }
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: {
+                                    duration: 500
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        backgroundColor: cardColor,
+                                        titleColor: headingColor,
+                                        bodyColor: legendColor,
+                                        borderWidth: 1,
+                                        borderColor: borderColor
+                                    },
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            color: borderColor,
+                                            drawBorder: false,
+                                            borderColor: borderColor
+                                        },
+                                        ticks: {
+                                            color: labelColor
+                                        }
+                                    },
+                                    y: {
+                                        min: 0,
+                                        grid: {
+                                            color: borderColor,
+                                            drawBorder: false,
+                                            borderColor: borderColor
+                                        },
+                                        ticks: {
+                                            stepSize: 100,
+                                            color: labelColor
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    const barChart2 = document.getElementById('barChart2');
+                    if (barChart2) {
+                        const barChartVar = new Chart(barChart2, {
+                            type: 'bar',
+                            data: {
+                                labels: sell_data.map(entry => get_month(entry.month.toString())),
+                                datasets: [
+                                    {
+                                        data: sell_data.map(entry => entry.sell_mount),
+                                        backgroundColor: orangeLightColor,
+                                        borderColor: 'transparent',
+                                        maxBarThickness: 15,
+                                        borderRadius: {
+                                            topRight: 15,
+                                            topLeft: 15
+                                        }
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: {
+                                    duration: 500
+                                },
+                                plugins: {
+                                    tooltip: {
+                                        backgroundColor: cardColor,
+                                        titleColor: headingColor,
+                                        bodyColor: legendColor,
+                                        borderWidth: 1,
+                                        borderColor: borderColor
+                                    },
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            color: borderColor,
+                                            drawBorder: false,
+                                            borderColor: borderColor
+                                        },
+                                        ticks: {
+                                            color: labelColor
+                                        }
+                                    },
+                                    y: {
+                                        min: 0,
+                                        grid: {
+                                            color: borderColor,
+                                            drawBorder: false,
+                                            borderColor: borderColor
+                                        },
+                                        ticks: {
+                                            stepSize: 100,
+                                            color: labelColor
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                </script>
+
+                <!-- Footer -->
+                {% include 'dashboard/footer.html' %}
+                <!-- / Footer -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- / Layout wrapper -->
+
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
+<script src="{% static 'dashboard_app' %}/vendor/libs/jquery/jquery.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/popper/popper.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/js/bootstrap.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/libs/hammer/hammer.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/libs/i18n/i18n.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/typeahead-js/typeahead.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/js/menu.js"></script>
+<!-- endbuild -->
+
+<!-- Vendors JS -->
+<script src="{% static 'dashboard_app' %}/vendor/libs/apex-charts/apexcharts.js"></script>
+
+<!-- Main JS -->
+<script src="{% static 'dashboard_app' %}/js/main.js"></script>
+
+<!-- Page JS -->
+<script src="{% static 'dashboard_app' %}/js/dashboards-analytics.js"></script>
+<script src="{% static 'dashboard_app/vendor/libs/chartjs/chartjs.js' %}"></script>
+{% include 'includes/messages.html' %}
+
+</body>
+</html>

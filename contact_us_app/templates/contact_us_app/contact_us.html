@@ -1,0 +1,180 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>تماس با ما</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container rounded-lg bg-white p-5 dark:bg-zinc-900">
+        <!-- Head -->
+        <div class="mb-5 flex">
+            <h1
+                    class="relative select-none pb-2 text-lg text-zinc-700 dark:text-white md:text-xl"
+            >
+                تماس با ما
+                <span
+                        class="absolute bottom-0 right-0 h-0.5 w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                ></span>
+            </h1>
+        </div>
+        <!-- Content -->
+        <p class="mb-5 leading-loose text-zinc-600 dark:text-zinc-300">
+            قبل از مطرح کردن هرگونه سوال ، بخش
+            <a href="{% url 'faq' %}" class="text-emerald-500 dark:text-emerald-400"
+            >سوالات متداول</a
+            >
+            را مطالعه نمایید.
+        </p>
+        <div class="grid grid-cols-5 gap-6">
+            <div class="col-span-5 md:col-span-3">
+                <form method="post" action="">
+                {% csrf_token %}
+                    <div class="grid grid-cols-2 items-center gap-6">
+                        {% for item in form %}
+                            {% if item.label == 'نام' or item.label == 'شماره تلفن' %}
+                                <div class="col-span-2 md:col-span-1">
+                                    <label
+                                            for="name"
+                                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                    >
+                                        <input
+                                                name="{{ item.name }}"
+                                                type="text"
+                                                id="name"
+                                                class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                                placeholder="نام شما"
+                                        />
+
+                                        <span
+                                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                        >
+                      {{ item.label }}
+                    </span>
+                                    </label>
+                                </div>
+                            {% elif item.label == 'ایمیل' %}
+                                <div class="col-span-2">
+                                    <label
+                                            for="email"
+                                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                    >
+                                        <input
+                                                name="{{ item.name }}"
+                                                type="text"
+                                                id="email"
+                                                class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                                placeholder="ایمیل شما"
+                                        />
+
+                                        <span
+                                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                        >
+                      {{ item.label }}
+                    </span>
+                                    </label>
+                                </div>
+                            {% elif item.label == 'پیام' %}
+                                <div class="col-span-2">
+                                    <label
+                                            for="message"
+                                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                    >
+                    <textarea
+                            name="{{ item.name }}"
+                            type="text"
+                            id="message"
+                            rows="3"
+                            class="main-scroll peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                            placeholder="پیام شما"
+                    ></textarea>
+
+                                        <span
+                                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                        >
+                      {{ item.label }}
+                    </span>
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <!-- Submit -->
+                        <div class="col-span-2 flex justify-end">
+                            <button type="submit" class="btn-primary w-full px-4 py-2 md:w-auto">
+                                ارسال پیام
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="order-first col-span-5 md:order-last md:col-span-2">
+                <ul class="space-y-6">
+                    <li>
+                        <!-- Email -->
+                        <div class="flex flex-col gap-y-4">
+                            <p class="text-zinc-600 dark:text-zinc-300">آدرس ایمیل</p>
+                            <a href="#" class="text-emerald-500 dark:text-emerald-400">
+                                info@rotikala.com
+                            </a>
+                        </div>
+                    </li>
+
+                    <li>
+                        <!-- phone -->
+                        <div class="flex flex-col gap-y-4">
+                            <p class="text-zinc-600 dark:text-zinc-300">
+                                تلفن پشتیبانی
+                            </p>
+                            <a
+                                    dir="ltr"
+                                    href="#"
+                                    class="text-emerald-500 dark:text-emerald-400"
+                            >
+                                021 - 0000000
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <!-- phone -->
+                        <div class="flex flex-col gap-y-4">
+                            <p class="min-w-fit text-zinc-600 dark:text-zinc-300">
+                                آدرس دفتر مرکزی
+                            </p>
+                            <a href="#" class="text-emerald-500 dark:text-emerald-400">
+                                استان تهران شهر تهران - خیابان گاندی جنوبی - نبش خیابان ۲۱
+                                - پلاک ۲۸
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'includes/footer.html' %}
+{% include 'includes/messages.html' %}
+</div>
+</body>
+
+</html>

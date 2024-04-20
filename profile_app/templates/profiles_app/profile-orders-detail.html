@@ -1,0 +1,339 @@
+{% load static %}
+{% load humanize %}
+{% load product_custom_filters %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>جزئیات سفارش 102030</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% include 'profile_includes/desktop_menu.html' %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <div
+                            class="mb-16 flex flex-col items-center justify-between gap-y-8 xs:flex-row"
+                    >
+                        <!-- Title -->
+                        <h1
+                                class="relative w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                        >
+                            جزئیات سفارش {{ order.tracking_code }}#
+                            <span
+                                    class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                            >
+                    </span>
+                        </h1>
+                    </div>
+
+                    <div class="mb-8">
+                        <div
+                                class="rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <div class="p-4">
+                                <!-- head -->
+                                <div class="flex items-center justify-between pb-6">
+                                    <div
+                                            class="flex items-center gap-x-2 text-emerald-500 dark:text-emerald-400"
+                                    >
+                                        <svg class="h-6 w-6">
+                                            <use xlink:href="#outline-check"></use>
+                                        </svg>
+                                        <p class="font-medium md:text-lg">{{ order.order_status }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- conent -->
+                                <div
+                                        class="flex flex-col gap-6 pb-6 xl:flex-row xl:justify-between xl:gap-16"
+                                >
+                                    <div class="flex flex-col gap-4 md:flex-row">
+                                        <div
+                                                class="flex items-center justify-between gap-x-2 md:justify-start"
+                                        >
+                                            <div
+                                                    class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                            >
+                                                کد پیگیری سفارش
+                                            </div>
+                                            <div
+                                                    class="text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                            >
+                                                {{ order.tracking_code }}
+                                            </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center justify-between gap-x-2 md:justify-start"
+                                        >
+                                            <div
+                                                    class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                            >
+                                                مبلغ کل
+                                            </div>
+                                            <div class="text-emerald-500 dark:text-emerald-400">
+                              <span class="font-bold md:text-lg"
+                              >{{ order.total_price|intcomma:False }}</span
+                              >
+                                                <span class="text-sm md:text-base">تومان</span>
+                                            </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center justify-between gap-x-2 md:justify-start"
+                                        >
+                                            <div
+                                                    class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                            >
+                                                تاریخ
+                                            </div>
+                                            <div
+                                                    class="text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                            >
+                                                {{ order.created_at.date }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-grow flex-col gap-y-4">
+                                        <!-- order status -->
+                                        <div
+                                                class="flex items-center gap-x-2 text-{{ order.preparation_tag }}-500 dark:text-{{ order.preparation_tag }}-400"
+                                        >
+                                            <svg class="h-5 w-5 md:h-6 md:w-6">
+                                                <use xlink:href="#order-pending"></use>
+                                            </svg>
+                                            <p class="text-sm font-medium md:text-base">
+                                                {{ order.order_status }}
+                                            </p>
+                                        </div>
+                                        <!-- order step -->
+
+                                        <div
+                                                class="relative h-2 w-full rounded-full bg-gray-200 dark:bg-zinc-800"
+                                        >
+                            <span
+                                    class="absolute inset-y-0 right-0 rounded-full bg-yellow-500 dark:bg-yellow-400"
+                                    style="width: {{ order.preparation_percent }}%"
+                            ></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <div
+                                class="rounded-lg border border-gray-100 p-4 shadow-base dark:border-white/5"
+                        >
+                            <div class="mb-6 flex flex-col gap-4 md:flex-row">
+                                <div
+                                        class="flex justify-between gap-x-2 lg:justify-start"
+                                >
+                                    <div
+                                            class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                    >
+                                        مبلغ مرسوله
+                                    </div>
+                                    <div class="text-emerald-500 dark:text-emerald-400">
+                                        <span class="font-bold md:text-lg">{{ order.total_price|intcomma:False }}</span>
+                                        <span class="text-sm md:text-base">تومان</span>
+                                    </div>
+                                </div>
+                                <div
+                                        class="flex justify-between gap-x-2 lg:justify-start"
+                                >
+                                    <div
+                                            class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                    >
+                                        درصد تخفیف
+                                    </div>
+                                    <div class="text-red-500 dark:text-red-400">
+                                        <span class="font-bold md:text-lg">{{ order.discount.percentage|default:'0' }}</span>
+                                        <span class="text-sm md:text-base">%</span>
+                                    </div>
+                                </div>
+                                <div
+                                        class="flex justify-between gap-x-2 lg:justify-start"
+                                >
+                                    <div
+                                            class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                    >
+                                        کد تخفیف
+                                    </div>
+                                    <div class="text-red-500 dark:text-red-400">
+                                        <span class="font-bold md:text-lg">{{ order.discount.code|default:'ندارد' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4 md:flex-row">
+                                <div
+                                        class="flex justify-between gap-x-2 lg:justify-start"
+                                >
+                                    <div
+                                            class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                    >
+                                        هزینه ارسال
+                                    </div>
+                                    <div class="text-emerald-500 dark:text-emerald-400">
+                                        <span class="font-bold md:text-lg">رایگان</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h2
+                                class="mb-8 flex items-center gap-x-4 text-lg text-zinc-600 dark:text-zinc-300"
+                        >
+                    <span
+                            class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400"
+                    ></span>
+                            آدرس تحویل سفارش
+                        </h2>
+                        <div
+                                class="block rounded-lg border border-gray-100 p-4 shadow-base hover:border-gray-200 dark:border-white/5 dark:hover:border-white/10"
+                        >
+                            <div
+                                    class="mb-4 flex items-center justify-between gap-x-2 sm:mb-2"
+                            >
+                                <p
+                                        class="line-clamp-2 h-10 text-sm text-zinc-600 dark:text-zinc-300 xs:text-base sm:line-clamp-1 sm:h-6"
+                                >
+                                    {{ order.address.address }}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h2
+                                class="mb-8 flex items-center gap-x-4 text-lg text-zinc-600 dark:text-zinc-300"
+                        >
+                    <span
+                            class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400"
+                    ></span>
+                            اقلام سفارش
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400">
+                      ( {{ order.items.count }} کالا )
+                    </span>
+                        </h2>
+                        <ul class="divide-y divide-gray-100 dark:divide-white/5">
+                            {% for item in order.items.all %}
+                                <li>
+                                    <div class="py-4 sm:py-6">
+                                        <div
+                                                class="grid grid-cols-2 items-center justify-start gap-2 xs:grid-cols-3 xs:gap-6 sm:grid-cols-4 xl:grid-cols-6"
+                                        >
+                                            <!-- Image -->
+                                            <div class="row-span-2 min-w-fit xs:mx-auto">
+                                                <a href="{% url 'product_detail' item.product.slug %}">
+                                                    <img
+                                                            alt=""
+                                                            class="w-25 rounded-lg sm:w-28"
+                                                            src="{{ item.product.poster.url }}"
+                                                    />
+                                                </a>
+                                            </div>
+                                            <!-- Detail -->
+                                            <div
+                                                    class="row-span-2 space-y-4 xs:col-span-2 sm:col-span-3 xl:col-span-5"
+                                            >
+                                                <!-- Title -->
+                                                <a
+                                                        class="line-clamp-2 text-sm text-zinc-700 dark:text-white md:text-base"
+                                                        href="{% url 'product_detail' item.product.slug %}"
+                                                >
+                                                    {{ item.product.title }}
+                                                </a>
+                                                <!-- Variant -->
+                                                {% if item.color %}
+                                                    <div class="flex items-center gap-x-2">
+                              <span
+                                      class="h-4 w-4 rounded-full"
+                                      style="background: {{ item.color|get_en_title }}"
+                              ></span>
+                                                        <span
+                                                                class="text-xs text-zinc-600 dark:text-zinc-300 xs:text-sm"
+                                                        >
+                                {{ item.color }}</span
+                                                        >
+                                                    </div>
+                                                {% endif %}
+                                                {% if item.size %}
+                                                    <div class="flex items-center gap-x-2">
+                                                        <span
+                                                                class="text-xs text-zinc-600 dark:text-zinc-300 xs:text-sm"
+                                                        >
+                                {{ item.size }}</span
+                                                        >
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <!-- Quantity -->
+                                            <div
+                                                    class="flex items-center gap-x-2 xs:justify-center"
+                                            >
+                                                <div
+                                                        class="flex h-10 w-24 items-center justify-center gap-x-3 rounded-lg border border-gray-100 px-4 py-1 dark:border-white/5 sm:w-28"
+                                                >
+                                                    <div
+                                                            class="flex h-5 w-5 select-none items-center justify-center text-sm font-medium text-zinc-700 dark:text-white sm:h-6 sm:w-6 sm:text-lg"
+                                                    >
+                                                        {{ item.quantity }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Price -->
+                                            <div
+                                                    class="row-span-2 xs:col-span-2 sm:col-span-3 xl:col-span-5"
+                                            >
+                                                <div
+                                                        class="text-emerald-500 dark:text-emerald-400 xs:col-span-2 sm:col-span-3 lg:text-lg xl:col-span-5"
+                                                >
+                                                    <span class="font-bold">{{ item.price|intcomma:False }}</span>
+                                                    <span class="text-sm lg:text-base">تومان</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include 'profile_includes/mobile_menu.html' %}
+</div>
+</body>
+</html>

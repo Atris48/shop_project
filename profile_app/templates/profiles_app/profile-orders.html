@@ -1,0 +1,283 @@
+{% load static %}
+{% load humanize %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>سفارشات</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% include 'profile_includes/desktop_menu.html' %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <!-- Title -->
+                    <h1
+                            class="relative mb-16 w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                    >
+                        سفارشات شما
+                        <span
+                                class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                        >
+                  </span>
+                    </h1>
+
+                    <div class="mb-8">
+                        <div
+                                class="mb-8 flex flex-wrap items-center justify-between gap-4"
+                        >
+                            <h2
+                                    class="flex items-center gap-x-4 text-lg text-zinc-600 dark:text-zinc-300"
+                            >
+                      <span
+                              class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400"
+                      ></span>
+                                سفارشات
+                            </h2>
+                        </div>
+                        <!-- Filter  Tabs -->
+
+                        <div id="ordersFilterTab">
+                            <div
+                                    aria-labelledby="filter-current-tab"
+                                    id="filter-current"
+                                    role="tabpanel"
+                            >
+                                <div class="mb-8 space-y-4">
+                                    {% for order in orders %}
+                                        <div
+                                                class="rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                        >
+                                            <a href="{% url 'user_profile_order_detail' order.unique_id %}">
+                                                <div class="p-4">
+                                                    <!-- head -->
+                                                    <div
+                                                            class="flex items-center justify-between pb-6"
+                                                    >
+                                                        <div
+                                                                class="flex items-center gap-x-2 text-emerald-500 dark:text-emerald-400"
+                                                        >
+                                                            <svg class="h-6 w-6">
+                                                                <use xlink:href="#outline-check"/>
+                                                            </svg>
+                                                            <p class="font-medium md:text-lg">
+                                                                {{ order.order_status }}
+                                                            </p>
+                                                        </div>
+
+                                                        <svg
+                                                                class="h-6 w-6 text-zinc-700 dark:text-white"
+                                                        >
+                                                            <use xlink:href="#chevron-left"/>
+                                                        </svg>
+                                                    </div>
+                                                    <!-- conent -->
+                                                    <div
+                                                            class="flex flex-col gap-6 pb-6 xl:flex-row xl:justify-between xl:gap-16"
+                                                    >
+                                                        <div class="flex flex-col gap-4 md:flex-row">
+                                                            <div
+                                                                    class="flex items-center justify-between gap-x-2 md:justify-start"
+                                                            >
+                                                                <div
+                                                                        class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                                                >
+                                                                    شماره سفارش
+                                                                </div>
+                                                                <div
+                                                                        class="text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                                                >
+                                                                    #{{ order.id }}
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                    class="flex items-center justify-between gap-x-2 md:justify-start"
+                                                            >
+                                                                <div
+                                                                        class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                                                >
+                                                                    مبلغ کل
+                                                                </div>
+                                                                <div
+                                                                        class="text-emerald-500 dark:text-emerald-400"
+                                                                >
+                                      <span class="font-bold md:text-lg"
+                                      >{{ order.total_price|intcomma:False }}</span
+                                      >
+                                                                    <span class="text-sm md:text-base"
+                                                                    >تومان</span
+                                                                    >
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                    class="flex items-center justify-between gap-x-2 md:justify-start"
+                                                            >
+                                                                <div
+                                                                        class="text-sm text-zinc-500 dark:text-zinc-400 md:text-base"
+                                                                >
+                                                                    تاریخ
+                                                                </div>
+                                                                <div
+                                                                        class="text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                                                >
+                                                                    {{ order.get_created_at }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex flex-grow flex-col gap-y-4">
+                                                            <!-- order status -->
+                                                            <div
+                                                                    class="flex items-center gap-x-2 text-{{ order.preparation_tag }}-500 dark:text-{{ order.preparation_tag }}-400"
+                                                            >
+                                                                <svg class="h-5 w-5 md:h-6 md:w-6">
+                                                                    <use xlink:href="#order-pending"/>
+                                                                </svg>
+                                                                <p class="text-sm font-medium md:text-base">
+                                                                    {{ order.order_status }}
+                                                                </p>
+                                                            </div>
+                                                            <!-- order step -->
+
+                                                            <div
+                                                                    class="relative h-2 w-full rounded-full bg-gray-200 dark:bg-zinc-800"
+                                                            >
+                                    <span
+                                            class="absolute inset-y-0 right-0 rounded-full bg-{{ order.preparation_tag }}-500 dark:bg-{{ order.preparation_tag }}-400"
+                                            style="width: {{ order.preparation_percent }}%"
+                                    ></span>
+                                                            </div>
+                                                            <!-- order date -->
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            {% if order.referrals.exists %}
+                                                {% if order.order_status == 'مرجوع شده' %}
+                                                {% else %}
+                                                    <p style="margin-right: 10px;float: right;text-align: right"
+                                                       class="btn-orange">درخواست مرجوع کردن</p>
+                                                {% endif %}
+
+                                            {% else %}
+                                                {% if order.is_valid_for_referral %}
+                                                    <a style="margin-right: 10px;float: right;text-align: right"
+                                                       href="{% url 'user_profile_order_referral' order.unique_id %}"
+                                                       class="btn-orange">مرجوع کردن</a>
+                                                {% endif %}
+                                            {% endif %}
+                                            <br>
+                                            <!-- products slider -->
+                                            <div class="swiper orders-product-swiper p-4">
+                                                <div class="swiper-wrapper">
+                                                    {% for item in order.items.all %}
+                                                        <div class="swiper-slide">
+                                                            <a
+                                                                    class="flex items-center gap-x-2 rounded-lg border border-gray-100 p-2 dark:border-white/5"
+                                                                    href="{% url 'product_detail' item.product.slug %}"
+                                                            >
+                                                                {% if item.product.poster %}
+                                                                    <img
+                                                                            alt=""
+                                                                            class="w-20"
+                                                                            src="{{ item.product.poster.url }}"
+                                                                    />
+                                                                {% endif %}
+                                                                <p
+                                                                        class="line-clamp-2 text-sm text-zinc-700 dark:text-white"
+                                                                >
+                                                                    {{ item.product.title }}
+                                                                </p>
+                                                            </a>
+                                                        </div>
+                                                    {% endfor %}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <!-- Pagination -->
+                                {% if orders.has_other_pages %}
+                                    <div
+                                            class="flex items-center justify-center gap-x-4 md:justify-end"
+                                    >
+                                        <!-- Previous page-->
+                                        {% if orders.has_previous %}
+                                            <a
+                                                    class="pagination-button flex items-center justify-center"
+                                                    href="?page={{ orders.previous_page_number }}"
+                                            >
+                                                <svg class="h-6 w-6">
+                                                    <use xlink:href="#chevron-right"></use>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+
+                                        <!-- Pages -->
+                                        {% for number in orders.paginator.page_range %}
+                                            {% if number >= orders.number|add:"-3" and number <= orders.number|add:"3" %}
+                                                <div class="flex items-center gap-x-2">
+                                                    <a
+                                                            class="pagination-button {% if orders.number == number %}pagination-button-active{% endif %}"
+                                                            href="?page={{ number }}"
+                                                    >
+                                                        {{ number }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <!-- Next page-->
+                                        {% if orders.has_next %}
+                                            <a
+                                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-700 transition-all duration-200 hover:bg-emerald-500 hover:text-white dark:bg-zinc-900 dark:text-white hover:dark:bg-emerald-600"
+                                                    href="?page={{ orders.next_page_number }}"
+                                            >
+                                                <svg class="h-6 w-6">
+                                                    <use xlink:href="#chevron-left"></use>
+                                                </svg>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'profile_includes/mobile_menu.html' %}
+{% include 'includes/messages.html' %}
+</div>
+</body>
+</html>

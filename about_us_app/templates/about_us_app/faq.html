@@ -1,0 +1,116 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>سوالات متداول</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container rounded-lg bg-white p-5 dark:bg-zinc-900">
+        <div class="mb-8">
+            <div class="mb-5 flex">
+                <h1
+                        class="relative select-none pb-2 text-lg text-zinc-700 dark:text-white md:text-xl"
+                >
+                    سوالات متداول
+                    <span
+                            class="absolute bottom-0 right-0 h-0.5 w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                    ></span>
+                </h1>
+            </div>
+            <p
+                    class="mb-5 text-sm text-zinc-600 dark:text-zinc-300 xs:text-base"
+            >
+                سوال خود را پیدا نکردید ؟
+                <a href="{% url 'contact_us' %}" class="text-emerald-500 dark:text-emerald-400"
+                >با ما تماس بگیرید</a
+                >
+            </p>
+        </div>
+        <div class="mb-16 grid grid-cols-12 gap-y-8 md:gap-x-8">
+            <div class="col-span-12 space-y-8 md:col-span-8">
+                <div>
+                    <div class="mb-4 flex items-center gap-x-2">
+                    </div>
+                    <ul
+                            class="mr-2 space-y-4 divide-y divide-gray-100 dark:divide-white/5"
+                    >
+                        {% for faq in faqs %}
+                            <li>
+                                <div data-accordion="open">
+                                    <div class="space-y-2">
+                                        <h2 id="faq-{{ forloop.counter }}">
+                                            <button
+                                                    aria-controls="faq-body-{{ forloop.counter }}"
+                                                    aria-expanded="false"
+                                                    class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-zinc-700 dark:text-white"
+                                                    data-accordion-target="#faq-body-{{ forloop.counter }}"
+                                                    type="button"
+                                            >
+                                                <span class="flex items-center"> {{ faq.question }} </span>
+
+                                                <svg
+                                                        aria-hidden="true"
+                                                        class="h-6 w-6"
+                                                        data-accordion-icon
+                                                >
+                                                    <use xlink:href="#chevron-down"/>
+                                                </svg>
+                                            </button>
+                                        </h2>
+                                        <div
+                                                aria-labelledby="faq-heading-{{ forloop.counter }}"
+                                                class="hidden"
+                                                id="faq-body-{{ forloop.counter }}"
+                                        >
+                                            <div class="mr-6 text-zinc-600 dark:text-zinc-300">
+                                                {{ faq.answer }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="flex justify-center">
+            <p
+                    class="mb-5 text-sm text-zinc-600 dark:text-zinc-300 xs:text-base"
+            >
+                سوال خود را پیدا نکردید ؟
+                <a href="{% url 'contact_us' %}" class="text-emerald-500 dark:text-emerald-400"
+                >با ما تماس بگیرید</a
+                >
+            </p>
+        </div>
+    </div>
+</main>
+{% include 'includes/footer.html' %}
+</div>
+</body>
+</html>

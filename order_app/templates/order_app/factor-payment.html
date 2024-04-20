@@ -1,0 +1,245 @@
+{% load static %}
+{% load humanize %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ثبت سفارش</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <!-- breadCrumb -->
+        <div
+                class="col-span-12 mb-2 rounded-lg bg-white dark:bg-zinc-900 lg:mb-6"
+        >
+            <ol class="grid grid-cols-3 overflow-hidden rounded-lg">
+                <li
+                        class="flex flex-col items-center justify-center gap-2 p-4 text-xs text-emerald-500 opacity-50 dark:text-emerald-400 sm:text-sm md:text-base"
+                >
+                    <svg class="h-6 w-6 md:h-8 md:w-8">
+                        <use xlink:href="#check"/>
+                    </svg>
+                    <p class="leading-none">سبد خرید</p>
+                </li>
+                <li
+                        class="flex flex-col items-center justify-center gap-2 p-4 text-xs text-emerald-500 opacity-50 dark:text-emerald-400 sm:text-sm md:text-base"
+                >
+                    <svg class="h-6 w-6 md:h-8 md:w-8">
+                        <use xlink:href="#address"/>
+                    </svg>
+                    <p class="leading-none">آدرس</p>
+                </li>
+                <li
+                        class="flex flex-col items-center justify-center gap-2 bg-emerald-500/10 p-4 text-xs text-emerald-500 dark:bg-emerald-400/10 dark:text-emerald-400 sm:text-sm md:text-base"
+                >
+                    <svg class="h-6 w-6 md:h-8 md:w-8">
+                        <use xlink:href="#credit"/>
+                    </svg>
+
+                    <p class="leading-none">پرداخت</p>
+                </li>
+            </ol>
+        </div>
+
+        <div
+                class="mx-auto max-w-[450px] rounded-lg bg-white p-5 dark:bg-zinc-900"
+        >
+            <!-- Head -->
+            <h1
+                    class="mb-8 text-center text-lg text-zinc-700 dark:text-white lg:text-xl"
+            >
+                جزئیات سفارش
+            </h1>
+
+            <div class="mb-6 divide-gray-100 dark:divide-white/5">
+                <!-- Coupon -->
+                <form method="post" action="{% url 'factor_discount' factor.id %}">
+                    <div class="mb-4 flex items-center justify-between gap-x-2">
+                        {% csrf_token %}
+                        <div
+                                class="flex w-full items-center justify-between gap-x-2 rounded-lg border border-gray-100 pl-4 dark:border-white/5"
+                        >
+                            <label
+                                    for="coupon"
+                                    class="relative block w-full rounded-lg shadow-base"
+                            >
+                                <input
+                                        name="code"
+                                        type="text"
+                                        id="coupon"
+                                        class="text-eft peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                        placeholder="کد تخفیف"
+                                />
+
+                                <span
+                                        class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                >
+                      کد تخفیف
+                    </span>
+                            </label>
+                            <button class="btn-primary-nobg py-2">اعمال</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- delivery price -->
+
+                <!-- delivery price -->
+
+                <div class="flex items-center justify-between gap-x-2 py-6">
+                    <div
+                            class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                    >
+                        هزینه ارسال
+                    </div>
+                    <div
+                            class="text-sm text-sky-500 dark:text-sky-400 lg:text-base"
+                    >
+                        <span class="font-bold"> رایگان </span>
+                    </div>
+                </div>
+                <!-- Order final price -->
+                {% if factor.discount %}
+                    <div class="flex items-center justify-between gap-x-2 py-6">
+                        <div
+                                class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                        >
+                            تخفیف
+                        </div>
+
+                        <div
+                                class="text-sm font-medium text-red-500 dark:text-red-400 lg:text-base"
+                        >
+                            <span style="float: left" class="font-bold">{{ factor.discount.percentage }}</span>
+                            <span style="float: left;margin-left: 4px;margin-top: 4px" class="text-xs lg:text-sm">%</span>
+                            {% if factor.discount.max_price %}
+                                <br>
+                                <p style="color: black;font-size: 12px">تا سقف {{ factor.discount.max_price|intcomma:False }} تومان </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-x-2 py-6">
+                        <div
+                                class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                        >
+                            مبلغ کل
+                        </div>
+
+                        <div
+                                class="text-sm font-medium text-yellow-500 dark:text-red-400 lg:text-base"
+                        >
+                            <span class="font-bold">{{ factor.get_total_price|intcomma:False }}</span>
+                            <span class="text-xs lg:text-sm">تومان</span>
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="flex items-center justify-between gap-x-2 py-6">
+                    <div
+                            class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                    >
+                        مبلغ قابل پرداخت
+                    </div>
+
+                    <div
+                            class="text-sm text-emerald-500 dark:text-emerald-400 lg:text-base"
+                    >
+                        {% if factor.total_price %}
+                            <span class="font-bold">{{ factor.total_price|intcomma:False }}</span>
+                        {% else %}
+                            <span class="font-bold">{{ factor.get_total_price|intcomma:False }}</span>
+                        {% endif %}
+                        <span class="text-xs lg:text-sm">تومان</span>
+                    </div>
+                </div>
+                <!-- Payment gateway -->
+
+                <fieldset
+                        class="flex flex-wrap items-center justify-evenly gap-4 space-y-2"
+                >
+                    <legend class="sr-only">Gateway</legend>
+                    <!-- gateway item -->
+
+                    <div>
+                        <input
+                                type="radio"
+                                name="gateway"
+                                value="gateway-1"
+                                id="gateway-1"
+                                class="peer hidden"
+                        />
+
+                        <label
+                                for="gateway-1"
+                                class="relative block cursor-pointer rounded-lg border border-gray-100 p-4 shadow-base hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 peer-checked:dark:border-emerald-400"
+                        >
+                            <div class="flex items-center gap-x-4">
+                                <img
+                                        src="{% static 'index_app' %}/images/others/zarinpal.png"
+                                        class="w-8 rounded-lg"
+                                        alt=""
+                                />
+                                <p class="text-zinc-600 dark:text-zinc-300">زرین پال</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div>
+                        <input
+                                type="radio"
+                                name="gateway"
+                                value="gateway-2"
+                                id="gateway-2"
+                                class="peer hidden"
+                        />
+
+                        <label
+                                for="gateway-2"
+                                class="relative block cursor-pointer rounded-lg border border-gray-100 p-4 shadow-base hover:border-gray-200 peer-checked:border-emerald-500 dark:border-white/5 dark:hover:border-white/10 peer-checked:dark:border-emerald-400"
+                        >
+                            <div class="flex items-center gap-x-4">
+                                <img
+                                        src="{% static 'index_app' %}/images/others/saman.png"
+                                        class="w-8 rounded-lg"
+                                        alt=""
+                                />
+                                <p class="text-zinc-600 dark:text-zinc-300">بانک سامان</p>
+                            </div>
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+            <div>
+                <form method="post" action="{% url 'factor_verify_pay' factor.id %}">
+                    {% csrf_token %}
+                    <button style="width: 100%" type="submit" class="btn btn-primary py-4"> پرداخت</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'includes/messages.html' %}
+</div>
+</body>
+</html>

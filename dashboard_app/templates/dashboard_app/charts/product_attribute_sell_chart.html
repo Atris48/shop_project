@@ -1,0 +1,189 @@
+{% load static %}
+{% load humanize %}
+{% load product_custom_filters %}
+<!DOCTYPE html>
+<html lang="fa" class="light-style layout-navbar-fixed layout-menu-fixed" dir="rtl" data-theme="theme-default"
+      data-assets-path="{% static 'dashboard_app' %}/" data-template="vertical-menu-template">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>داشبورد - تجزیه و تحلیل | فرست - قالب مدیریت بوت‌استرپ</title>
+
+    <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'dashboard_app' %}/img/favicon/favicon.ico">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/boxicons.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/fontawesome.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/flag-icons.css">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/core.css"
+          class="template-customizer-core-css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/theme-default.css"
+          class="template-customizer-theme-css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/css/demo.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/rtl.css">
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/typeahead-js/typeahead.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/apex-charts/apex-charts.css">
+
+    <!-- Page CSS -->
+
+    <!-- Helpers -->
+    <script src="{% static 'dashboard_app' %}/vendor/js/helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="{% static 'dashboard_app' %}/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static 'dashboard_app' %}/js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu -->
+        {% include 'dashboard/sidebar.html' %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+            <!-- Navbar -->
+            {% include 'dashboard/menu.html' %}
+            <!-- / Navbar -->
+            <!-- Content wrapper -->
+            <div class="content-wrapper">
+                <!-- Content -->
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <div class="row">
+                        <!-- Website Analytics-->
+                        <div>
+                            <form action="">
+                                <select style="height: 50px;width: 100%" name="id" id="">
+                                    {% for product in products %}
+                                        {% if product.attributes.count > 0 %}
+                                            <option onclick=""
+                                                    {% if request.GET.id|intword == product.id %}selected{% endif %}
+                                                    value="{{ product.id }}">{{ product.title }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <br><br>
+                                <select style="height: 50px;width: 100%" name="day" id="">
+                                    <option {% if request.GET.day == '1' %}selected{% endif %} value="1">امروز</option>
+                                    <option {% if request.GET.day == '7' %}selected{% endif %} value="7">هفته پیش
+                                    </option>
+                                    <option {% if request.GET.day == '30' %}selected{% endif %} value="30">ماه پیش
+                                    </option>
+                                    <option {% if request.GET.day == '365' %}selected{% endif %} value="365">یکسال
+                                        پیش
+                                    </option>
+                                    <option {% if request.GET.day == 'all' %}selected{% endif %} value="all">
+                                        کل
+                                    </option>
+                                </select>
+                                <br><br>
+                                <button style="width: 100%" type="submit" class="btn btn-primary">تایید</button>
+                            </form>
+                        </div>
+                        <div>
+                            <br><br><br><br>
+                            <canvas style="max-height: 500px" id="yearOrderChart"></canvas>
+                        </div>
+                        {% if data|length > 0 %}
+                            <script>
+
+                                const ctx2 = document.getElementById('yearOrderChart');
+
+                                new Chart(ctx2, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: {{ labels|safe }},
+                                        datasets: [{
+                                            label: 'میزان فروش',
+                                            data: {{ data }},
+                                            backgroundColor: [
+                                                'rgb(255, 99, 132)',
+                                                'rgb(54, 162, 235)',
+                                                'rgb(255, 205, 86)',
+                                                'rgb(18,205,75)',
+                                                'rgb(164,11,11)',
+                                                'rgba(0,212,255,0.53)',
+                                                'rgb(95,80,197)',
+                                                'rgba(255,255,255,0.53)',
+                                                'rgb(55,5,5)',
+                                                'rgb(5,75,26)',
+                                                'rgb(37,39,118)',
+                                                'rgb(183,127,31)',
+                                                'rgba(135,124,217,0.27)',
+                                                'rgb(10,241,245)',
+                                                'rgb(251,127,10)',
+                                                'rgb(210,155,248)',
+                                                'rgb(18,241,163)',
+                                                'rgb(255,7,124)',
+                                            ],
+                                            hoverOffset: 4,
+                                        }]
+                                    },
+                                });
+
+
+                            </script>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- / Content -->
+
+                <!-- Footer -->
+                {% include 'dashboard/footer.html' %}
+                <!-- / Footer -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- / Layout wrapper -->
+
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
+<script src="{% static 'dashboard_app' %}/vendor/libs/jquery/jquery.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/popper/popper.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/js/bootstrap.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/libs/hammer/hammer.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/libs/i18n/i18n.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/typeahead-js/typeahead.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/js/menu.js"></script>
+<!-- endbuild -->
+
+<!-- Vendors JS -->
+<script src="{% static 'dashboard_app' %}/vendor/libs/apex-charts/apexcharts.js"></script>
+
+<!-- Main JS -->
+<script src="{% static 'dashboard_app' %}/js/main.js"></script>
+
+<!-- Page JS -->
+<script src="{% static 'dashboard_app' %}/js/dashboards-analytics.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>صفحه مورد نظر یافت نشد</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="mt-10 flex flex-col items-center justify-center gap-y-6">
+        <h1 class="text-9xl font-bold text-zinc-600 dark:text-zinc-300">
+            404
+        </h1>
+        <h2 class="text-lg text-zinc-600 dark:text-zinc-300 lg:text-xl">
+            صفحه‌ای که دنبال آن بودید پیدا نشد!
+        </h2>
+        <a class="btn-primary px-6 py-3" href="{% url 'index' %}"
+        >بازگشت به صفحه اصلی</a
+        >
+    </div>
+</main>
+{% include 'includes/footer.html' %}
+</div>
+</body>
+</html>

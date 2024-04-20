@@ -1,0 +1,14 @@
+{% extends "star_ratings/widget_base.html" %}
+{% block rating_detail %}
+
+    <p>امتیاز مقاله : <span class="text-success">{{ rating.average|floatformat:2 }}</span></p>
+    <p>تعداد رای ها : <span class="text-info">{{ rating.count }}</span></p>
+    {% if user_rating %}
+        <p>میزان رای شما : <span class="text-primary">{{ user_rating.score }}</span></p>
+    {% endif %}
+    {% if not request.user.is_authenticated %}
+        <a href="{% url 'user_login' %}">
+            برای امتیازدهی وارد شوید
+        </a>
+    {% endif %}
+{% endblock %}

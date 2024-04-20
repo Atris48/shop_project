@@ -1,0 +1,114 @@
+{% load static %}
+{% load render_partial %}
+{% load custom_filters %}
+{% load humanize %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>پیشخوان</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% with phone=user.phone %}
+                    {% render_partial 'profile_app.views.profile_desktop_menu' phone=phone %}
+                {% endwith %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <h1
+                            class="relative mb-16 w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                    >
+                        شما {{ user.prize_amount|intcomma:False }} امتیاز دارید
+                        <span
+                                class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                        >
+                                      </span>
+                    </h1>
+                    {% for prize in prizes %}
+                        {% if user not in prize.discount.user.all and user not in prize.discount.use.all %}
+                            <div align="center" style="border-radius: 5px;border: 1px solid black">
+                                <p style="margin-bottom: 5px">{{ prize.amount|intcomma:False }} جایزه</p>
+                                <p>کد تخفیف {{ prize.discount.percentage }}%{% if prize.discount.max_price %}تا سقف
+                                    {{ prize.discount.max_price|intcomma:False }}{% endif %}</p>
+                                {% if user.prize_amount >= prize.amount %}
+                                    <form method="post" action="">
+                                        {% csrf_token %}
+                                        <input type="number" hidden name="prize_id" value="{{ prize.id }}">
+                                        <button style="margin-bottom: 10px;margin-top: 10px;width: 30%"
+                                                class="btn-primary">
+                                            دریافت
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button disabled
+                                            style="color: white;border-radius: 10px;background-color: rgba(244,7,7,0.95);margin-bottom: 10px;margin-top: 10px;width: 95%"
+                                            class="btn">
+                                        برای دریافت به {{ prize.amount|minus:user.prize_amount }} امتیاز نیاز دارید
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                    <h1
+                            class="relative mb-16 w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                    >
+                        کد های تخفیف قابل استفاده شما
+                        <span
+                                class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                        >
+                                      </span>
+                    </h1>
+                    {% for discount in user_active_discount %}
+                        {% if user not in discount.use.all %}
+                            <div align="center"
+                                 style="background-color: rgba(14,174,14,0.62);border-radius: 5px;border: 1px solid black">
+                                <p style="font-size: 20px;color: white">کد تخفیف {{ discount.percentage }}%
+                                    {% if discount.max_price %}تا سقف
+                                        {{ discount.max_price|intcomma:False }}{% endif %}</p>
+                                <h1 style="font-size: 20px;color: white;margin-bottom: 10px;margin-top: 10px;width: 30%">
+                                    کد
+                                    تخفیف : {{ discount.code }}</h1>
+                            </div>
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'profile_includes/mobile_menu.html' %}
+{% include 'includes/messages.html' %}
+</div>
+</body>
+</html>

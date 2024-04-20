@@ -1,0 +1,101 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>شرایط مرجوعی</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet" />
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet" />
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet" />
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script>
+      // Set Theme from Localstorage at site load
+      document.documentElement.classList.toggle(
+        "dark",
+        localStorage.getItem("theme") === "dark",
+      );
+    </script>
+  </head>
+
+  <body>
+    {% include 'includes/header.html' %}
+
+      <main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+        <div class="container rounded-lg bg-white p-5 dark:bg-zinc-900">
+          <!-- Head -->
+          <div class="mb-5 flex">
+            <h1
+              class="relative select-none pb-2 text-lg text-zinc-700 dark:text-white md:text-xl"
+            >
+              شرایط مرجوعی
+              <span
+                class="absolute bottom-0 right-0 h-0.5 w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+              ></span>
+            </h1>
+          </div>
+          <!-- Content -->
+          <div class="space-y-4">
+            <p class="leading-loose text-zinc-600 dark:text-zinc-300">
+              لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
+              استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله
+              در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد
+              نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد،
+              کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان
+              جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای
+              طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان
+              فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری
+              موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد
+              نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل
+              دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.لورم ایپسوم متن
+              ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان
+              گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان
+              که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای
+              متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت
+              و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می
+              طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی
+              الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این
+              صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و
+              شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی
+              دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی
+              اساسا مورد استفاده قرار گیرد.لورم ایپسوم متن ساختگی با تولید سادگی
+              نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و
+              متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای
+              شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود
+              ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال
+              و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم
+              افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان
+              خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان
+              امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت
+              تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی،
+              و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده
+              قرار گیرد.
+            </p>
+            <ul
+              class="mb-5 list-inside list-disc space-y-3 text-zinc-600 dark:text-zinc-300"
+            >
+              <li>لورم ایپسوم متن ساختگی با</li>
+              <li>لورم ایپسوم متن ساختگی با</li>
+              <li>لورم ایپسوم متن ساختگی با</li>
+              <li>لورم ایپسوم متن ساختگی با</li>
+            </ul>
+            <ul
+              class="mb-5 list-inside list-decimal space-y-3 text-zinc-600 dark:text-zinc-300"
+            >
+              <li>لورم ایپسوم متن ساختگی با</li>
+              <li>لورم ایپسوم متن ساختگی با</li>
+              <li>لورم ایپسوم متن ساختگی با</li>
+              <li>لورم ایپسوم متن ساختگی با</li>
+            </ul>
+          </div>
+        </div>
+      </main>
+{% include 'includes/footer.html' %}
+    </div>
+  </body>
+</html>

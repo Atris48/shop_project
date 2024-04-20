@@ -1,0 +1,690 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>اطلاعات حساب کاربری</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                <!-- Desktop sidebar -->
+
+                {% include 'profile_includes/desktop_menu.html' %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <!-- Title -->
+                    <h1
+                            class="relative mb-16 w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                    >
+                        اطلاعات حساب کاربری شما
+                        <span
+                                class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                        >
+                  </span>
+                    </h1>
+                    <!-- Content -->
+                    <div class="grid grid-cols-2 gap-4">
+                        {% for item in form %}
+                            <div disabled="" class="mb-4 space-y-4">
+                                <label disabled=""
+                                       for="{{ item.id_for_label }}"
+                                       class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input disabled="disabled"
+                                           type="text"
+                                           id="{{ item.id_for_label }}"
+                                           dir="auto"
+                                           value="{{ item.value|default:'' }}"
+                                           name="{{ item.name }}"
+                                           class="peer w-full rounded-lg border-none bg-transparent p-4 text-left text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                           placeholder="مثال"
+                                    />
+                                    <span disabled="disabled"
+                                          class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                    >
+                {{ item.label }}
+              </span>
+                                </label>
+                                <p class="h-5 text-sm text-red-500 dark:text-red-400">
+                                    {% for error in item.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        {% endfor %}
+                        {% for item in edit_form %}
+                            {% if item.value %}
+                                <div disabled="" class="mb-4 space-y-4">
+                                <label disabled=""
+                                       for="birthdate"
+                                       class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input disabled="disabled"
+                                           type="text"
+                                           dir="auto"
+                                           value="{{ item.value|default:'' }}"
+                                           class="peer w-full rounded-lg border-none bg-transparent p-4 text-left text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                           placeholder="مثال"
+                                    />
+                                    <span disabled="disabled"
+                                          class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                    >
+                {{ item.label }}
+              </span>
+                                </label>
+                            </div>
+                            {% else %}
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-4 space-y-4">
+                                        <label
+                                                for="{{ item.id_for_label }}"
+                                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                        >
+                                            <input
+                                                    type="{{ item.widget_type }}"
+                                                    id="{{ item.id_for_label }}"
+                                                    dir="auto"
+                                                    value="{{ item.value|default:'' }}"
+                                                    name="{{ item.name }}"
+                                                    class="peer w-full rounded-lg border-none bg-transparent p-4 text-left text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                                    placeholder="test"
+                                            />
+                                            <span
+                                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-zinc-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-zinc-300"
+                                            >
+                {{ item.label }}
+              </span>
+
+                                        </label>
+                                        <p>مثال : 1-1-1380</p>
+                                        <p class="h-5 text-sm text-red-500 dark:text-red-400">
+                                            {% for error in item.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+
+                                        </p>
+                                    </div>
+                                    <div class="mb-5">
+                                        <button class="btn-primary w-full py-3">ارسال</button>
+                                    </div>
+                                </form>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include 'profile_includes/mobile_menu.html' %}
+<!-- Full name modal -->
+<div
+        id="fullname-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-2xl">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        تغییر نام و نام خانوادگی
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="fullname-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"></use>
+                        </svg>
+
+                        <span class="sr-only">Close Modal</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="name"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="name"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="نام "
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نام
+                    </span>
+                        </label>
+                        <div class="my-2 h-6 text-red-500 dark:text-red-400"></div>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label
+                                for="family"
+                                class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                        >
+                            <input
+                                    type="text"
+                                    id="family"
+                                    class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                    placeholder="نام خانوادگی"
+                            />
+
+                            <span
+                                    class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                            >
+                      نام خانوادگی
+                    </span>
+                        </label>
+                        <div class="my-2 h-6 text-red-500 dark:text-red-400"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-x-4">
+                    <button
+                            class="btn-primary w-full px-4 py-2 xs:w-24"
+                            type="button"
+                    >
+                        ویرایش
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- national code modal -->
+<div
+        id="nationalCode-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-md">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        ثبت کد ملی
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="nationalCode-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"></use>
+                        </svg>
+
+                        <span class="sr-only">Close Modal</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div>
+                    <label
+                            for="nationalCode"
+                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                    >
+                        <input
+                                type="text"
+                                id="nationalCode"
+                                class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                placeholder="کد ملی "
+                        />
+
+                        <span
+                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                        >
+                    کد ملی
+                  </span>
+                    </label>
+                    <div class="my-2 h-6"></div>
+                </div>
+                <div class="flex items-center justify-end gap-x-4">
+                    <button
+                            class="btn-primary w-full px-4 py-2 xs:w-24"
+                            type="button"
+                    >
+                        ویرایش
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- phone mumber modal -->
+<div
+        id="phoneNumber-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-md">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        تغییر شماره موبایل
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="phoneNumber-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"></use>
+                        </svg>
+
+                        <span class="sr-only">Close Modal</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div>
+                    <label
+                            for="phoneNumber"
+                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                    >
+                        <input
+                                type="text"
+                                id="phoneNumber"
+                                dir="auto"
+                                class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-left text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                placeholder="شماره موبایل"
+                        />
+
+                        <span
+                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                        >
+                    شماره موبایل
+                  </span>
+                    </label>
+                    <div class="my-2 h-6 text-red-500 dark:text-red-400"></div>
+                </div>
+                <div class="flex items-center justify-end gap-x-4">
+                    <button
+                            class="btn-primary w-full px-4 py-2 xs:w-fit"
+                            type="button"
+                    >
+                        ارسال کد تایید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- email modal -->
+<div
+        id="email-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-md">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        تغییر ایمیل
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="email-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"></use>
+                        </svg>
+
+                        <span class="sr-only">Close Modal</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div>
+                    <label
+                            for="phoneNumber"
+                            class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                    >
+                        <input
+                                type="text"
+                                id="phoneNumber"
+                                dir="auto"
+                                class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-left text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                placeholder=" ایمیل"
+                        />
+
+                        <span
+                                class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                        >
+                    ایمیل
+                  </span>
+                    </label>
+                    <div class="my-2 h-6 text-red-500 dark:text-red-400"></div>
+                </div>
+                <div class="flex items-center justify-end gap-x-4">
+                    <button
+                            class="btn-primary w-full px-4 py-2 xs:w-fit"
+                            type="button"
+                    >
+                        ارسال کد تایید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- password modal -->
+<div
+        id="password-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-lg">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        تغییر ایمیل
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="password-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"></use>
+                        </svg>
+
+                        <span class="sr-only">Close Modal</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div>
+                    <form novalidate="">
+                        <div class="mb-4">
+                            <div>
+                                <label
+                                        for="currentPassword"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            type="text"
+                                            id="currentPassword"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            placeholder="کلمه عبور فعلی"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                          کلمه عبور فعلی
+                        </span>
+                                </label>
+                                <div
+                                        class="my-2 h-6 text-red-500 dark:text-red-400"
+                                ></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div>
+                                <label
+                                        for="password"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            type="text"
+                                            id="password"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            placeholder="کلمه عبور جدید"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                          کلمه عبور جدید
+                        </span>
+                                </label>
+                                <div
+                                        class="my-2 h-6 text-red-500 dark:text-red-400"
+                                ></div>
+                            </div>
+                            <div>
+                                <div class="mb-4 flex items-center gap-x-2">
+                                    <div
+                                            class="h-[3px] w-full rounded-full bg-gray-200 dark:bg-zinc-800"
+                                    ></div>
+                                    <div
+                                            class="h-[3px] w-full rounded-full bg-gray-200 dark:bg-zinc-800"
+                                    ></div>
+                                    <div
+                                            class="h-[3px] w-full rounded-full bg-gray-200 dark:bg-zinc-800"
+                                    ></div>
+                                    <div
+                                            class="h-[3px] w-full rounded-full bg-gray-200 dark:bg-zinc-800"
+                                    ></div>
+                                </div>
+                                <div>
+                                    <ul
+                                            class="select-none list-disc space-y-2 px-4 text-xs text-slate-500 dark:text-slate-400 md:text-sm"
+                                    >
+                                        <li>
+                                            <p>حداقل 6 حرف</p>
+                                        </li>
+                                        <li>
+                                            <p>شامل عدد</p>
+                                        </li>
+                                        <li>
+                                            <p>شامل یک حرف بزرگ</p>
+                                        </li>
+                                        <li>
+                                            <p>شامل یک حرف کوچک</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div>
+                                <label
+                                        for="family"
+                                        class="relative block rounded-lg border border-gray-100 shadow-base dark:border-white/5"
+                                >
+                                    <input
+                                            type="text"
+                                            id="family"
+                                            class="peer w-full rounded-lg border-none bg-transparent px-4 py-3 text-zinc-700 placeholder-transparent focus:outline-none focus:ring-0 dark:text-white"
+                                            placeholder="تکرار کلمه عبور جدید"
+                                    />
+
+                                    <span
+                                            class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white px-2 py-0.5 text-sm text-gray-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-sm dark:bg-zinc-900 dark:text-gray-300"
+                                    >
+                          تکرار کلمه عبور جدید
+                        </span>
+                                </label>
+                                <div
+                                        class="my-2 h-6 text-red-500 dark:text-red-400"
+                                ></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex items-center justify-end gap-x-4">
+                    <button
+                            class="btn-primary w-full px-4 py-2 xs:w-fit"
+                            type="button"
+                    >
+                        تغییر کلمه عبور
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- birth date modal -->
+<div
+        id="birthDate-modal"
+        tabindex="-1"
+        aria-hidden="true"
+        class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+>
+    <div class="relative max-h-full w-full max-w-md">
+        <div
+                class="divide-y divide-gray-100 overflow-hidden rounded-lg bg-white shadow ring-1 ring-gray-100 dark:divide-white/5 dark:bg-zinc-900 dark:ring-white/5"
+        >
+            <div class="px-4 py-5 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-zinc-700 dark:text-white md:text-lg">
+                        تغییر تاریخ تولد
+                    </h3>
+
+                    <button
+                            class="text-zinc-700 dark:text-white"
+                            data-modal-hide="birthDate-modal"
+                            type="button"
+                    >
+                        <svg class="h-5 w-5">
+                            <use xlink:href="#close"></use>
+                        </svg>
+
+                        <span class="sr-only">Close Modal</span>
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-6 px-4 py-5 sm:p-6">
+                <div class="flex items-center justify-between gap-x-6">
+                    <div class="w-full">
+                        <label
+                                for="year"
+                                class="mb-2 block font-medium text-zinc-600 dark:text-zinc-300"
+                        >
+                            سال
+                        </label>
+                        <select
+                                id="year"
+                                class="mb-6 block w-full rounded-lg border border-gray-100 bg-white p-2 text-zinc-600 outline-none focus:ring-0 dark:border-white/5 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder-zinc-400"
+                        >
+                            <option selected>سال</option>
+                            <option value="1380">1380</option>
+                            <option value="1381">1381</option>
+                            <option value="1382">1382</option>
+                            <option value="1383">1383</option>
+                            <option value="1384">1384</option>
+                            <option value="1385">1385</option>
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label
+                                for="year"
+                                class="mb-2 block font-medium text-zinc-600 dark:text-zinc-300"
+                        >
+                            ماه
+                        </label>
+                        <select
+                                id="year"
+                                class="mb-6 block w-full rounded-lg border border-gray-100 bg-white p-2 text-zinc-600 outline-none focus:ring-0 dark:border-white/5 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder-zinc-400"
+                        >
+                            <option selected>ماه</option>
+                            <option value="shahrivar">شهریور</option>
+                            <option value="azar">آذر</option>
+                            <option value="dey">دی</option>
+                            <option value="khordad">خرداد</option>
+                            <option value="aban">آبان</option>
+                            <option value="mordad">مرداد</option>
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label
+                                for="year"
+                                class="mb-2 block font-medium text-zinc-600 dark:text-zinc-300"
+                        >
+                            روز
+                        </label>
+                        <select
+                                id="year"
+                                class="mb-6 block w-full rounded-lg border border-gray-100 bg-white p-2 text-zinc-600 outline-none focus:ring-0 dark:border-white/5 dark:bg-zinc-900 dark:text-zinc-300 dark:placeholder-zinc-400"
+                        >
+                            <option selected>روز</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-x-4">
+                    <button
+                            class="btn-primary w-full px-4 py-2 xs:w-24"
+                            type="button"
+                    >
+                        ویرایش
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% include 'includes/messages.html' %}
+<link rel="stylesheet" href="{% static 'admin/jquery.ui.datepicker.jalali/themes/base/jquery-ui.min.css' %}">
+<script src="{% static 'admin/js/django_jalali.min.js' %}"></script>
+</body>
+</html>

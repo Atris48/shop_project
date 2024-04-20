@@ -1,0 +1,157 @@
+{% load static %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>پیام ها</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% include 'profile_includes/desktop_menu.html' %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <div
+                            class="mb-16 flex flex-col items-center justify-between gap-y-8 xs:flex-row"
+                    >
+                        <!-- Title -->
+                        <h1
+                                class="relative w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                        >
+                            پیام های شما
+                            <span
+                                    class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                            >
+                    </span>
+                        </h1>
+                    </div>
+                    {% if notifications %}
+                        <div
+                                class="space-y-4 divide-y divide-gray-100 dark:divide-white/5"
+                        >
+                            {% for notification in notifications %}
+                                <div class="py-6">
+                                    <!-- Title -->
+                                    <div
+                                            class="mb-4 flex items-center gap-x-2 text-sky-500 dark:text-sky-400"
+                                    >
+                                        <svg class="h-6 w-6">
+                                            <use xlink:href="#order"/>
+                                        </svg>
+                                        <p class="md:text-lg">
+                                            {{ notification.title }}
+                                        <p style="margin-right: 10px">{{ notification.get_created_at }}</p>
+
+                                        </p>
+                                    </div>
+                                    <p
+                                            class="mb-4 text-sm text-zinc-600 dark:text-zinc-300 md:text-base"
+                                    >
+                                        {{ notification.description }}
+                                    </p>
+                                    <div class="flex justify-end">
+                                        <a href="{{ notification.url|default:'#' }}"
+                                           class="btn-primary w-full px-4 py-2 text-sm sm:w-fit"
+                                        >
+                                            جزییات بیشتر
+                                            <svg class="h-5 w-5">
+                                                <use xlink:href="#chevron-left"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                        <!-- Pagination -->
+                        {% if notifications.has_other_pages %}
+                            <div
+                                    class="flex items-center justify-center gap-x-4 md:justify-end"
+                            >
+                                <!-- Previous page-->
+                                {% if notifications.has_previous %}
+                                    <a
+                                            class="pagination-button flex items-center justify-center"
+                                            href="?page={{ notifications.previous_page_number }}"
+                                    >
+                                        <svg class="h-6 w-6">
+                                            <use xlink:href="#chevron-right"></use>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+
+                                <!-- Pages -->
+                                {% for number in notifications.paginator.page_range %}
+                                    {% if number >= notifications.number|add:"-3" and number <= notifications.number|add:"3" %}
+                                        <div class="flex items-center gap-x-2">
+                                            <a
+                                                    class="pagination-button {% if notifications.number == number %}pagination-button-active{% endif %}"
+                                                    href="?page={{ number }}"
+                                            >
+                                                {{ number }}
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <!-- Next page-->
+                                {% if notifications.has_next %}
+                                    <a
+                                            class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-zinc-700 transition-all duration-200 hover:bg-emerald-500 hover:text-white dark:bg-zinc-900 dark:text-white hover:dark:bg-emerald-600"
+                                            href="?page={{ notifications.next_page_number }}"
+                                    >
+                                        <svg class="h-6 w-6">
+                                            <use xlink:href="#chevron-left"></use>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <!-- empty message -->
+                    {% else %}
+                        <div class="flex justify-center">
+                            <div
+                                    class="flex flex-col items-center justify-center gap-y-4 text-zinc-500 dark:text-zinc-400"
+                            >
+                                <svg class="h-20 w-20">
+                                    <use xlink:href="#notification-off"/>
+                                </svg>
+                                <p class="md:text-xl">لیست پیام های شما خالی میباشد</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'profile_includes/mobile_menu.html' %}
+</div>
+</body>
+</html>

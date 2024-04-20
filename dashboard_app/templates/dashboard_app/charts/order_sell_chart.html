@@ -1,0 +1,419 @@
+{% load static %}
+{% load humanize %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="fa" class="light-style layout-navbar-fixed layout-menu-fixed" dir="rtl" data-theme="theme-default"
+      data-assets-path="{% static 'dashboard_app' %}/" data-template="vertical-menu-template">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>داشبورد - تجزیه و تحلیل | فرست - قالب مدیریت بوت‌استرپ</title>
+
+    <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'dashboard_app' %}/img/favicon/favicon.ico">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/boxicons.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/fontawesome.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/fonts/flag-icons.css">
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/core.css"
+          class="template-customizer-core-css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/theme-default.css"
+          class="template-customizer-theme-css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/css/demo.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/css/rtl/rtl.css">
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/typeahead-js/typeahead.css">
+    <link rel="stylesheet" href="{% static 'dashboard_app' %}/vendor/libs/apex-charts/apex-charts.css">
+
+    <!-- Page CSS -->
+
+    <!-- Helpers -->
+    <script src="{% static 'dashboard_app' %}/vendor/js/helpers.js"></script>
+
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
+    <script src="{% static 'dashboard_app' %}/vendor/js/template-customizer.js"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static 'dashboard_app' %}/js/config.js"></script>
+</head>
+
+<body>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu -->
+        {% include 'dashboard/sidebar.html' %}
+        <!-- / Menu -->
+
+        <!-- Layout container -->
+        <div class="layout-page">
+            <!-- Navbar -->
+            {% include 'dashboard/menu.html' %}
+            <!-- / Navbar -->
+            <!-- Content wrapper -->
+            <div class="content-wrapper">
+                <!-- Content -->
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <div class="row">
+                        <!-- Website Analytics-->
+                        {% if label %}
+                            <p class="btn btn-success" align="center">{{ label }}</p>
+                        {% endif %}
+                        {% if years %}
+                            <div>
+                                <form action="{% url 'year_chart' %}">
+                                    <select style="height: 50px;width: 100%" name="year" id="">
+                                        {% for year in years %}
+                                            <option {% if request.GET.year|intword == year %}selected{% endif %}
+                                                    value="{{ year }}">{{ year }}</option>
+                                        {% endfor %}
+
+                                    </select>
+                                    <br><br>
+                                    <button style="width: 100%" type="submit" class="btn btn-primary">تایید</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                        <h3>کل سفارشات : {{ order_data|total_order_count|intcomma:False }}</h3>
+                        <h3>مبلغ کل سفارشات : {{ sell_data|sum_sell|intcomma:False }}</h3>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <div>
+                            <br><br><br><br>
+                            <canvas id="yearOrderChart"></canvas>
+                        </div>
+                        <div>
+                            <br><br><br><br>
+                            <canvas id="YearSellChart"></canvas>
+                        </div>
+
+                        <script>
+                            function get_month(value) {
+                                if (value === '1') {
+                                    return 'فروردین'
+                                }
+                                if (value === '2') {
+                                    return 'اردیبهشت'
+                                }
+                                if (value === '3') {
+                                    return 'خرداد'
+                                }
+                                if (value === '4') {
+                                    return 'تیر'
+                                }
+                                if (value === '5') {
+                                    return 'مرداد'
+                                }
+                                if (value === '6') {
+                                    return 'شهریور'
+                                }
+                                if (value === '7') {
+                                    return 'مهر'
+                                }
+                                if (value === '8') {
+                                    return 'آبان'
+                                }
+                                if (value === '9') {
+                                    return 'آذر'
+                                }
+                                if (value === '10') {
+                                    return 'دی'
+                                }
+                                if (value === '11') {
+                                    return 'بهمن'
+                                }
+                                if (value === '12') {
+                                    return 'اسفند'
+                                }
+                            }
+
+                            const ctx2 = document.getElementById('yearOrderChart');
+                            const ctx3 = document.getElementById('YearSellChart');
+
+                            const order_data_data =
+                            {{ order_data|safe }}
+                            const sell_data_data = {{ sell_data|safe }}
+
+
+                                {% if request.resolver_match.url_name == 'last_day_order_data' %}
+                                    new Chart(ctx2, {
+                                        type: 'line',
+                                        data: {
+                                            labels: order_data_data.map(entry => entry.hour.toString()),
+                                            datasets: [{
+                                                label: 'آمار سفارشات',
+                                                data: order_data_data.map(entry => entry.order_count),
+                                                backgroundColor: [
+                                                    'rgba(249,6,6,0.69)',
+
+                                                ],
+                                                pointStyle: 'circle',
+                                                pointRadius: 5,
+                                                pointHoverRadius: 15,
+                                                borderColor: [
+                                                    'rgba(17,126,218,0.62)',
+
+                                                ],
+                                                borderWidth: 3
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                    new Chart(ctx3, {
+                                        type: 'line',
+                                        data: {
+                                            labels: sell_data_data.map(entry => entry.hour.toString()),
+                                            datasets: [
+                                                {
+                                                    label: 'آمار فروش ',
+                                                    data: sell_data_data.map(entry => entry.sell_mount),
+                                                    borderColor: 'rgba(237,134,227,0.8)',
+                                                    backgroundColor: 'rgba(237,134,227,0.62)',
+                                                    pointStyle: 'circle',
+                                                    pointRadius: 5,
+                                                    pointHoverRadius: 15
+                                                }
+                                            ]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+                                                }
+                                            }
+                                        }
+                                    });
+                                {% elif request.resolver_match.url_name == 'all_order_data'  %}
+                                    new Chart(ctx2, {
+                                        type: 'line',
+                                        data: {
+                                            labels: order_data_data.map(entry => entry.year.toString()),
+                                            datasets: [{
+                                                label: 'آمار سفارشات',
+                                                data: order_data_data.map(entry => entry.order_count),
+                                                backgroundColor: [
+                                                    'rgba(249,6,6,0.69)',
+
+                                                ],
+                                                pointStyle: 'circle',
+                                                pointRadius: 5,
+                                                pointHoverRadius: 15,
+                                                borderColor: [
+                                                    'rgba(17,126,218,0.62)',
+
+                                                ],
+                                                borderWidth: 3
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                    new Chart(ctx3, {
+                                        type: 'line',
+                                        data: {
+                                            labels: sell_data_data.map(entry => entry.year.toString()),
+                                            datasets: [
+                                                {
+                                                    label: 'آمار فروش ',
+                                                    data: sell_data_data.map(entry => entry.sell_mount),
+                                                    borderColor: 'rgba(237,134,227,0.8)',
+                                                    backgroundColor: 'rgba(237,134,227,0.62)',
+                                                    pointStyle: 'circle',
+                                                    pointRadius: 5,
+                                                    pointHoverRadius: 15
+                                                }
+                                            ]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+                                                }
+                                            }
+                                        }
+                                    });
+                                {% elif request.resolver_match.url_name == 'last_year_order_data' or request.resolver_match.url_name == 'year_chart' %}
+                                    new Chart(ctx2, {
+                                        type: 'line',
+                                        data: {
+                                            labels: order_data_data.map(entry => get_month(entry.month.toString())),
+                                            datasets: [{
+                                                label: 'آمار سفارشات',
+                                                data: order_data_data.map(entry => entry.order_count),
+                                                backgroundColor: [
+                                                    'rgba(249,6,6,0.69)',
+
+                                                ],
+                                                pointStyle: 'circle',
+                                                pointRadius: 5,
+                                                pointHoverRadius: 15,
+                                                borderColor: [
+                                                    'rgba(17,126,218,0.62)',
+
+                                                ],
+                                                borderWidth: 3
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                    new Chart(ctx3, {
+                                        type: 'line',
+                                        data: {
+                                            labels: sell_data_data.map(entry => get_month(entry.month.toString())),
+                                            datasets: [
+                                                {
+                                                    label: 'آمار فروش ',
+                                                    data: sell_data_data.map(entry => entry.sell_mount),
+                                                    borderColor: 'rgba(237,134,227,0.8)',
+                                                    backgroundColor: 'rgba(237,134,227,0.62)',
+                                                    pointStyle: 'circle',
+                                                    pointRadius: 5,
+                                                    pointHoverRadius: 15
+                                                }
+                                            ]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+                                                }
+                                            }
+                                        }
+                                    });
+                                {% else %}
+                                    new Chart(ctx2, {
+                                        type: 'line',
+                                        data: {
+                                            labels: order_data_data.map(entry => entry.day.toString()),
+                                            datasets: [{
+                                                label: 'آمار سفارشات',
+                                                data: order_data_data.map(entry => entry.order_count),
+                                                backgroundColor: [
+                                                    'rgba(249,6,6,0.69)',
+
+                                                ],
+                                                pointStyle: 'circle',
+                                                pointRadius: 5,
+                                                pointHoverRadius: 15,
+                                                borderColor: [
+                                                    'rgba(17,126,218,0.62)',
+
+                                                ],
+                                                borderWidth: 3
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                    new Chart(ctx3, {
+                                        type: 'line',
+                                        data: {
+                                            labels: sell_data_data.map(entry => entry.day.toString()),
+                                            datasets: [
+                                                {
+                                                    label: 'آمار فروش ',
+                                                    data: sell_data_data.map(entry => entry.sell_mount),
+                                                    borderColor: 'rgba(237,134,227,0.8)',
+                                                    backgroundColor: 'rgba(237,134,227,0.62)',
+                                                    pointStyle: 'circle',
+                                                    pointRadius: 5,
+                                                    pointHoverRadius: 15
+                                                }
+                                            ]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            plugins: {
+                                                title: {
+                                                    display: true,
+                                                    text: (ctx) => 'Point Style: ' + ctx.chart.data.datasets[0].pointStyle,
+                                                }
+                                            }
+                                        }
+                                    });
+                                {% endif %}
+                        </script>
+                    </div>
+                </div>
+                <!-- / Content -->
+
+                <!-- Footer -->
+                {% include 'dashboard/footer.html' %}
+                <!-- / Footer -->
+
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+</div>
+<!-- / Layout wrapper -->
+
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
+<script src="{% static 'dashboard_app' %}/vendor/libs/jquery/jquery.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/popper/popper.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/js/bootstrap.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/libs/hammer/hammer.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/libs/i18n/i18n.js"></script>
+<script src="{% static 'dashboard_app' %}/vendor/libs/typeahead-js/typeahead.js"></script>
+
+<script src="{% static 'dashboard_app' %}/vendor/js/menu.js"></script>
+<!-- endbuild -->
+
+<!-- Vendors JS -->
+<script src="{% static 'dashboard_app' %}/vendor/libs/apex-charts/apexcharts.js"></script>
+
+<!-- Main JS -->
+<script src="{% static 'dashboard_app' %}/js/main.js"></script>
+
+<!-- Page JS -->
+<script src="{% static 'dashboard_app' %}/js/dashboards-analytics.js"></script>
+</body>
+</html>

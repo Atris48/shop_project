@@ -1,0 +1,82 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark blog-navbar"><!-- start navbar -->
+    <div class="container">
+        <a class="navbar-brand" href="blog.html">
+            <img src="{% static 'blog_app' %}/images/blog-logo.jpg">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#blog-nav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="blog-nav">
+            <ul class="navbar-nav w-100 text-center">
+                <li class="nav-item custom-nav-item"><a class="nav-link" href="{% url 'index' %}">فروشگاه</a></li>
+                {% if not request.user.is_authenticated %}
+                    <li class="nav-item custom-nav-item"><a class="nav-link" href="{% url 'user_login' %}">ورود/ثبت
+                        نام</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item custom-nav-item dropdown"><a class="nav-link dropdown-toggle" href="#"
+                                                                 data-bs-toggle="dropdown">دسته بندی ها</a>
+                    <div class="dropdown-menu custom-blog-dropdown-menu"><!-- start sub menu -->
+                        {% for nav_category in nav_categories %}
+                            <a href="{% url 'category_detail' nav_category.slug %}"
+                               class="dropdown-item">{{ nav_category.title }}</a>
+                        {% endfor %}
+                    </div><!-- end sub menu -->
+                </li>
+            </ul>
+            <form action="{% url 'search_result_article' %}">
+                <div class="search-in-result  position-relative">
+                    <input style="width: 250px" id="q" name="q" onkeydown="search()" onkeyup="search()" type="search" class="form-control"
+                           placeholder="جستجو">
+                    <div  id="liveResult" style="width: 250px;border-radius: 5px;background: white">
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"
+        integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    function set_value(value) {
+        document.getElementById('q').value = value
+    }
+
+    function search() {
+        var q = document.getElementById('q').value
+        var ul = document.getElementById('liveResult')
+        if (q.length > 2) {
+            let fd = new FormData();
+            fd.append("q", q);
+            axios.get(`/search-suggest-article`, {
+                params: {
+                    q: q
+                }
+            })
+                .then(res => {
+                    console.log(res.data.result.length)
+                    if (res.data.result.length > 0) {
+                        ul.style.display = 'block'
+                        ul.innerHTML = ""
+                        var items = res.data.result;
+                        items.map(function (item) {
+                            ul.innerHTML +=
+                                `<li style="text-align: right;font-size: 14px;cursor: pointer" onclick="set_value('${item}')">${item.slice(0, 18)}...</li>`
+                        });
+                    } else {
+                        ul.innerHTML = ""
+                        ul.innerHTML +=
+                            `<p>مقاله ای یافت نشد</p>`
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                });
+        }
+    }
+</script>
+

@@ -1,0 +1,325 @@
+{% load static %}
+{% load product_custom_filters %}
+{% load humanize %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>سبد خرید</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container pb-14">
+        <div class="grid grid-cols-12 gap-2 lg:gap-6">
+            <!-- breadCrumb -->
+            <div class="col-span-12 rounded-lg bg-white dark:bg-zinc-900">
+                <ol class="grid grid-cols-3 overflow-hidden rounded-lg">
+                    <li
+                            class="flex flex-col items-center justify-center gap-2 bg-emerald-500/10 p-4 text-xs text-emerald-500 dark:bg-emerald-400/10 dark:text-emerald-400 sm:text-sm md:text-base"
+                    >
+                        <svg class="h-6 w-6 md:h-8 md:w-8">
+                            <use xlink:href="#cart"/>
+                        </svg>
+                        <p class="leading-none">فاکتور شما</p>
+                    </li>
+                    <li
+                            class="flex flex-col items-center justify-center gap-2 p-4 text-xs text-emerald-500 opacity-50 dark:text-emerald-400 sm:text-sm md:text-base"
+                    >
+                        <svg class="h-6 w-6 md:h-8 md:w-8">
+                            <use xlink:href="#address"/>
+                        </svg>
+
+                        <p class="leading-none">آدرس</p>
+                    </li>
+                    <li
+                            class="flex flex-col items-center justify-center gap-2 p-4 text-xs text-emerald-500 opacity-50 dark:text-emerald-400 sm:text-sm md:text-base"
+                    >
+                        <svg class="h-6 w-6 md:h-8 md:w-8">
+                            <use xlink:href="#credit"/>
+                        </svg>
+
+                        <p class="leading-none">پرداخت</p>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Cart List -->
+            <div class="col-span-12 md:col-span-8">
+                <div class="rounded-lg bg-white p-4 dark:bg-zinc-900">
+                    <!-- Heading -->
+                    <div class="flex items-center justify-between gap-x-2 pb-4">
+                        <h1
+                                class="flex items-center gap-x-4 text-sm text-zinc-700 dark:text-white xs:text-base md:text-lg"
+                        >
+                            سبد خرید
+                            <span class="text-sm text-zinc-500 dark:text-zinc-400">
+                      ( {{ factor.items.count }} کالا )
+                    </span>
+                        </h1>
+                        <a href="{% url 'factor_delete_all_item' %}" class="btn-red-nobg px-3 py-2 text-sm">
+                    <span>
+                      <svg class="h-6 w-6">
+                        <use xlink:href="#trash"></use>
+                      </svg>
+                    </span>
+                            <span>حذف همه</span>
+                        </a>
+                    </div>
+                    <ul class="divide-y divide-gray-100 dark:divide-white/5">
+                        {% for item in factor.items.all %}
+                            <li>
+                                <div class="py-4 sm:py-6">
+                                    <div
+                                            class="grid grid-cols-2 items-center justify-start gap-2 xs:grid-cols-3 xs:gap-6 sm:grid-cols-4 xl:grid-cols-6"
+                                    >
+                                        <!-- Image -->
+                                        <div class="relative row-span-2 min-w-fit xs:mx-auto">
+                                            <a href="{% url 'product_detail' item.product.slug %}">
+                                                {% if item.product.poster %}
+                                                    <img
+                                                            alt=""
+                                                            class="w-25 rounded-lg sm:w-28"
+                                                            src="{{ item.product.poster.url }}"
+                                                    />
+                                                {% endif %}
+                                            </a>
+
+                                            <a
+                                                    href="{% url 'factor_delete_item' item.id %}"
+                                                    class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-black"
+                                                    type="button"
+                                            >
+                                                <svg class="h-6 w-6 text-red-600 dark:text-red-500">
+                                                    <use xlink:href="#close"></use>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                        <!-- Detail -->
+                                        <div
+                                                class="row-span-2 space-y-4 xs:col-span-2 sm:col-span-3 xl:col-span-5"
+                                        >
+                                            <!-- Title -->
+                                            <a
+                                                    class="line-clamp-2 text-sm text-zinc-700 dark:text-white xs:text-base"
+                                                    href="{% url 'product_detail' item.product.slug %}"
+                                            >
+                                                {{ item.product.title }}
+                                            </a>
+                                            <!-- Variant -->
+                                            {% if item.color %}
+                                                <div class="flex items-center gap-x-2">
+                            <span
+                                    class="h-4 w-4 rounded-full"
+                                    style="background: {{ item.color|get_en_title|default:'' }}"
+                            ></span>
+                                                    <span
+                                                            class="text-xs text-zinc-600 dark:text-zinc-300 xs:text-sm"
+                                                    >
+                              {{ item.color|default:'' }}</span
+                                                    >
+                                                </div>
+                                            {% endif %}
+                                            <div class="flex items-center gap-x-2">
+                                                {% if item.size %}
+                                                    <span
+                                                            class="text-xs text-zinc-600 dark:text-zinc-300 xs:text-sm"
+                                                    >
+                            سایز: {{ item.size|default:'' }}</span
+                                                    >
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <!-- Quantity -->
+                                        <div
+                                                class="flex items-center gap-x-2 xs:justify-center"
+                                        >
+                                            <div class="flex h-10 w-24 items-center justify-center gap-x-3 rounded-lg border border-gray-100 px-4 py-1 dark:border-white/5">
+                                                <button onclick="increaseCounter({{ item.id }})" type="button"
+                                                        id="plus-btn">
+                                                    <svg class="h-5 w-5 text-emerald-500 dark:text-emerald-400">
+                                                        <use xlink:href="#plus"/>
+                                                    </svg>
+                                                </button>
+                                                <div id="counter-{{ item.id }}"
+                                                     class="flex h-5 w-5 select-none items-center justify-center text-sm text-zinc-700 dark:text-white">
+                                                    {{ item.quantity }}
+                                                </div>
+                                                <button onclick="decreaseCounter({{ item.id }})" type="button"
+                                                        id="minus-btn">
+                                                    <svg class="h-5 w-5 text-emerald-500 dark:text-emerald-400">
+                                                        <use xlink:href="#minus"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            {{ item.get_inventory }}
+                                        </div>
+                                        <!-- Price -->
+                                        <div
+                                                class="text-emerald-500 dark:text-emerald-400 xs:col-span-2 sm:col-span-3 lg:text-lg xl:col-span-5"
+                                        >
+                                            <span id="item_price_{{ item.id }}"
+                                                  class="font-bold">{{ item.price|intcomma:False }}</span>
+                                            <span class="text-sm lg:text-base">تومان</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+            </div>
+            <!-- Cart Price Detail -->
+            <div class="col-span-12 md:col-span-4">
+                <!-- Desktop -->
+                <div
+                        class="hidden rounded-lg bg-white p-4 dark:bg-zinc-900 md:block"
+                >
+                    <div class="mb-2 divide-y divide-gray-100 dark:divide-white/5">
+                        <!-- cart items price before discount - coupon -->
+                        <div class="flex items-center justify-between gap-x-2 py-6">
+                            <div
+                                    class="text-sm text-zinc-600 dark:text-zinc-300 lg:text-base"
+                            >
+                                قیمت کالا ها ({{ factor.items.count }})
+                            </div>
+
+                            <div
+                                    class="text-sm text-emerald-500 dark:text-emerald-400 lg:text-base"
+                            >
+                                <span id="desktop_total_price"
+                                      class="font-bold">{{ factor.get_total_price|intcomma:False }}</span>
+                                <span class="text-xs lg:text-sm">تومان</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    {% if factor.items.count > 0 %}
+                        <a href="{% url 'factor_address' factor.id %}"
+                           class="btn-primary py-3">
+                            ادامه فرایند خرید
+                        </a>
+                    {% endif %}
+                </div>
+                <!-- Mobile -->
+                <div
+                        class="fixed inset-x-0 bottom-0 flex items-center gap-x-6 rounded-t-2xl bg-white p-4 dark:bg-zinc-900 md:hidden"
+                >
+                    {% if factor.items.count > 0 %}
+                        <a
+                                class="btn-primary flex-grow py-3"
+                                href="{% url 'factor_address' factor.id %}"
+                        >
+                            ادامه فرایند خرید</a
+                        >
+                    {% endif %}
+                    <div class="flex flex-col items-center gap-y-1">
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                            مبلغ قابل پرداخت
+                        </div>
+                        <div class="text-zinc-600 dark:text-zinc-300">
+                            <span id="mobile_total_price"
+                                  class="font-bold">{{ factor.get_total_price|intcomma:False }}</span>
+                            <span class="text-sm">تومان</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+<script>
+
+    function increaseCounter(id) {
+        const counterElement = document.getElementById(`counter-${id}`);
+        const currentCount = parseInt(counterElement.innerText);
+        var desktop_total_price = document.getElementById(`desktop_total_price`)
+        var mobile_total_price = document.getElementById(`mobile_total_price`)
+        var span_item_price = document.getElementById(`item_price_${id}`)
+
+        axios.get(`/checkout-increase-item-quantity/${id}`, {}, {
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(res => {
+                if (res.data.status === 'success') {
+                    console.log(res.data.status)
+                    counterElement.innerText = currentCount + 1;
+                    var formattedNumber = res.data.total_price.toFixed(0).toLocaleString(undefined, {minimumIntegerDigits: 3});
+                    var result = formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    var itemformattedNumber = res.data.item_price.toFixed(0).toLocaleString(undefined, {minimumIntegerDigits: 3});
+                    var itemresult = itemformattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    desktop_total_price.innerText = result
+                    mobile_total_price.innerText = result
+                    span_item_price.innerText = itemresult
+                } else {
+                    window.location.reload()
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+    }
+
+    function decreaseCounter(id) {
+        const counterElement = document.getElementById(`counter-${id}`);
+        const currentCount = parseInt(counterElement.innerText);
+        var desktop_total_price = document.getElementById(`desktop_total_price`)
+        var mobile_total_price = document.getElementById(`mobile_total_price`)
+        var span_item_price = document.getElementById(`item_price_${id}`)
+
+        axios.get(`/checkout-decrease-item-quantity/${id}`, {}, {
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(res => {
+                if (res.data.status === 'success') {
+                    console.log(res.data.status)
+                    counterElement.innerText = currentCount - 1;
+                    var formattedNumber = res.data.total_price.toFixed(0).toLocaleString(undefined, {minimumIntegerDigits: 3});
+                    var result = formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    var itemformattedNumber = res.data.item_price.toFixed(0).toLocaleString(undefined, {minimumIntegerDigits: 3});
+                    var itemresult = itemformattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                    desktop_total_price.innerText = result
+                    mobile_total_price.innerText = result
+                    span_item_price.innerText = itemresult
+                } else {
+                    window.location.reload()
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"
+        integrity="sha512-WrdC3CE9vf1nBf58JHepuWT4x24uTacky9fuzw2g/3L9JkihgwZ6Cfv+JGTtNyosOhEmttMtEZ6H3qJWfI7gIQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% include 'includes/messages.html' %}
+</body>
+</html>

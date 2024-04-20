@@ -1,0 +1,237 @@
+{% load static %}
+{% load render_partial %}
+{% load custom_filters %}
+<!doctype html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>پیشخوان</title>
+
+    <link href="{% static 'index_app' %}/css/fonts.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/dependencies/swiper.min.css" rel="stylesheet"/>
+    <link href="{% static 'index_app' %}/css/app.css" rel="stylesheet"/>
+
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/flowbite.min.js"></script>
+    <script defer src="{% static 'index_app' %}/scripts/dependencies/swiper.min.js"></script>
+
+    <script defer src="{% static 'index_app' %}/scripts/app.js"></script>
+
+    <script>
+        // Set Theme from Localstorage at site load
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("theme") === "dark",
+        );
+    </script>
+</head>
+
+<body>
+{% include 'includes/header.html' %}
+<main class="flex-grow bg-gray-100 pb-14 pt-36 dark:bg-black xs:pt-36">
+    <div class="container">
+        <div class="grid grid-cols-12 gap-4">
+            <!-- sidebar -->
+            <div class="col-span-12 lg:col-span-3">
+                {% with phone=user.phone %}
+                    {% render_partial 'profile_app.views.profile_desktop_menu' phone=phone %}
+                {% endwith %}
+                {% include 'profile_includes/mobile_header_menu.html' %}
+            </div>
+
+            <!-- content -->
+            <div class="col-span-12 lg:col-span-9">
+                <div class="rounded-lg bg-white p-5 shadow-base dark:bg-zinc-900">
+                    <!-- Title -->
+                    <h1
+                            class="relative mb-16 w-fit text-xl font-medium text-zinc-700 dark:text-white"
+                    >
+                        پیشخوان
+                        <span
+                                class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-emerald-500 dark:bg-emerald-400"
+                        >
+                                      </span>
+                    </h1>
+                    <div class="mb-8">
+                        <h2
+                                class="mb-8 flex items-center gap-x-4 text-lg text-zinc-600 dark:text-zinc-300"
+                        >
+                                        <span
+                                                class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400"
+                                        ></span>
+                            حساب کاربری
+                        </h2>
+                        <div class="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
+                            <a
+                                    href="{% url 'user_edit_profile' user.phone %}"
+                                    class="flex flex-col items-center gap-4 rounded-base bg-sky-500 p-2 dark:bg-sky-600 md:flex-row"
+                            >
+                                <div
+                                        class="relative rounded-base bg-sky-600/50 p-2 dark:bg-sky-500/50"
+                                >
+                                    <svg class="h-8 w-8 text-white">
+                                        <use xlink:href="#user-setting"/>
+                                    </svg>
+                                </div>
+
+                                <div class="text-sm font-medium text-white md:text-base">
+                                    تکمیل مشخصات
+                                </div>
+                            </a>
+                            <a
+                                    href="{% url 'user_profile_favorites' user.phone %}"
+                                    class="flex flex-col items-center gap-4 rounded-base bg-rose-500 p-2 dark:bg-rose-600 md:flex-row"
+                            >
+                                <div
+                                        class="relative rounded-base bg-rose-600/50 p-2 dark:bg-rose-500/50"
+                                >
+                                    <svg class="h-8 w-8 text-white">
+                                        <use xlink:href="#heart"/>
+                                    </svg>
+                                    <span
+                                            class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-600 text-sm font-medium text-white dark:bg-rose-500 md:hidden"
+                                    >
+                                              {{ user.product_fav.count }}
+                                            </span>
+                                </div>
+
+                                <div
+                                        class="flex items-center gap-x-2 text-sm font-medium text-white md:text-base"
+                                >
+                                    <span class="hidden md:block">{{ user.product_fav.count }}</span> علاقه مندی
+                                </div>
+                            </a>
+                            <a
+                                    href="{% url 'user_profile_notifications' user.phone %}"
+                                    class="flex flex-col items-center gap-4 rounded-base bg-emerald-500 p-2 dark:bg-emerald-600 md:flex-row"
+                            >
+                                <div
+                                        class="relative rounded-base bg-emerald-600/50 p-2 dark:bg-emerald-500/50"
+                                >
+                                    <svg class="h-8 w-8 text-white">
+                                        <use xlink:href="#notification"/>
+                                    </svg>
+                                    <span
+                                            class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-sm font-medium text-white dark:bg-emerald-500 md:hidden"
+                                    >
+                                              {{ user.notification_set.count }}
+                                            </span>
+                                </div>
+
+                                <div
+                                        class="flex items-center gap-x-2 text-sm font-medium text-white md:text-base"
+                                >
+                                    <span class="hidden md:block">{{ user.notification_set.count }}</span> اعلان
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <div
+                                class="mb-8 flex flex-wrap items-center justify-between gap-4"
+                        >
+                            <h3
+                                    class="flex items-center gap-x-4 text-lg text-zinc-600 dark:text-zinc-300"
+                            >
+                                          <span
+                                                  class="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400"
+                                          ></span>
+                                وضعیت سفارش های شما
+                            </h3>
+                            <a
+                                    class="btn-primary-nobg text-base"
+                                    href="{% url 'user_profile_orders' user.phone %}"
+                            >
+                                مشاهده همه
+                                <span>
+                                            <svg class="h-5 w-5 lg:h-6 lg:w-6">
+                                              <use xlink:href="#chevron-left"></use>
+                                            </svg>
+                                          </span>
+                            </a>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-4">
+                            <div
+                                    class="flex flex-col items-center gap-4 rounded-base bg-sky-500 p-2 dark:bg-sky-600 md:flex-row"
+                            >
+                                <div
+                                        class="relative rounded-base bg-sky-600/50 p-2 dark:bg-sky-500/50"
+                                >
+                                    <svg class="h-10 w-10 text-white">
+                                        <use xlink:href="#order-current"/>
+                                    </svg>
+                                    <span
+                                            class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-sky-600 text-sm font-medium text-white dark:bg-sky-500 md:hidden"
+                                    >
+                                              {{ user.orders.all|get_active_orders }}
+                                            </span>
+                                </div>
+                                <div class="flex flex-col gap-y-1">
+                                    <div class="hidden font-medium text-white md:block">
+                                        {{ user.orders.all|get_active_orders }} سفارش
+                                    </div>
+                                    <div class="text-white">فعلی</div>
+                                </div>
+                            </div>
+
+                            <!-- item -->
+                            <div
+                                    class="flex flex-col items-center gap-4 rounded-base bg-emerald-500 p-2 dark:bg-emerald-600 md:flex-row"
+                            >
+                                <div
+                                        class="relative rounded-base bg-emerald-600/50 p-2 dark:bg-emerald-500/50"
+                                >
+                                    <svg class="h-10 w-10 text-white">
+                                        <use xlink:href="#order-delivered"/>
+                                    </svg>
+                                    <span
+                                            class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-sm font-medium text-white dark:bg-emerald-500 md:hidden"
+                                    >
+                                              {{ user.orders.all|get_send_orders }}
+                                            </span>
+                                </div>
+                                <div class="flex flex-col gap-y-1">
+                                    <div class="hidden font-medium text-white md:block">
+                                        {{ user.orders.all|get_send_orders }} سفارش
+                                    </div>
+                                    <div class="text-white">ارسال شده</div>
+                                </div>
+                            </div>
+
+                            <!-- item -->
+                            <div
+                                    class="flex flex-col items-center gap-4 rounded-base bg-red-500 p-2 dark:bg-red-400 md:flex-row"
+                            >
+                                <div
+                                        class="relative rounded-base bg-red-400/50 p-2 dark:bg-red-500/50"
+                                >
+                                    <svg class="h-10 w-10 text-white">
+                                        <use xlink:href="#order-canceled"/>
+                                    </svg>
+                                    <span
+                                            class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-400 text-sm font-medium text-white dark:bg-red-500 md:hidden"
+                                    >
+                                              {{ user.orders.all|get_referral_orders }}
+                                            </span>
+                                </div>
+                                <div class="flex flex-col gap-y-1">
+                                    <div class="hidden font-medium text-white md:block">
+                                        {{ user.orders.all|get_referral_orders }} سفارش
+                                    </div>
+                                    <div class="text-white">مرجوع شده</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% include 'profile_includes/mobile_menu.html' %}
+</div>
+</body>
+</html>
